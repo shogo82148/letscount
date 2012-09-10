@@ -13,6 +13,7 @@ function countRoute(rows, cols) {
     var path = []; // これまでに通った経路
     var visited = []; // 訪問履歴
     var i, j;
+    var startTime = (new Date()).getTime();
 
     if(rows<=3 && cols<=3) {
         PERIOD_SHOW = 0;
@@ -37,7 +38,8 @@ function countRoute(rows, cols) {
 
     // 結果出力
     postMessage({
-        count: count
+        count: count,
+        time: (new Date()).getTime() - startTime
     });
 
     function search(x, y) {

@@ -38,6 +38,9 @@ $(function() {
             if(data.count) {
                 showCount(data.count);
             }
+            if(data.time) {
+                console.log('Time: ' + data.time + 'ms');
+            }
         }
 
         // 描画
