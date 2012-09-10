@@ -1,4 +1,4 @@
-var PERIOD_SHOW = 200;
+var PERIOD_SHOW = 50;
 var SLEEP_TIME = 0;
 
 addEventListener('message', onMessage, false);
@@ -43,28 +43,26 @@ function countRoute(rows, cols) {
     });
 
     function search(x, y) {
-        //訪問済み判定
-        if(visited[x][y]) return;
-
-        //ゴールへの経路が無い場合はスキップ
-        if(visited[cols-1][rows] && visited[cols][rows-1]) return;
-
-        path.push([x, y]);
-
         //ゴール！
         if(x==cols && y==rows) {
             ++count;
+            path.push([x, y]);
             showPath(count, path);
             path.pop();
             return;
         }
 
+        //ゴールへの経路が無い場合はスキップ
+        if(visited[cols-1][rows] && visited[cols][rows-1]) return;
+
         //検索を続行
+        path.push([x, y]);
         visited[x][y] = true;
-        if(x < cols) search(x+1, y);
-        if(x > 0) search(x-1, y);
-        if(y < rows) search(x, y+1);
-        if(y > 0) search(x, y-1);
+
+        if(x < cols && !visited[x+1][y]) search(x+1, y);
+        if(x > 0 && !visited[x-1][y]) search(x-1, y);
+        if(y < rows && !visited[x][y+1]) search(x, y+1);
+        if(y > 0 && !visited[x][y-1]) search(x, y-1);
 
         visited[x][y] = false;
         path.pop();
