@@ -1,0 +1,49 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="letscount.css">
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+    <script src="letscount.js"></script>
+  </head>
+  <body>
+    <div id="container">
+      <div id="outer-display">
+        <div id="inner-display">
+          <div id="problem">
+            <p class="text-japanese">
+              同じ所を２度通らない道順の数
+            </p>
+            <p class="text-english">
+              Total number of routes that do not pass by the same place twice
+            </p>
+            <p id="problem-text">
+            </p>
+          </div>
+          <div id="patterns">
+            <div id="start">S</div>
+            <div id="goal">G</div>
+            <canvas id="path" width="500" height="500"></canvas>
+          </div>
+          <div id="result">
+            <div id="result-text"></div>
+            <div class="text-japanese">通り</div>
+            <div class="text-english">patterns</div>
+          </div>
+        </div>
+      </div>
+      <input type="button" value="1×1" rows="1" cols="1">
+      <input type="button" value="2×2" rows="2" cols="2">
+      <input type="button" value="3×3" rows="3" cols="3">
+      <input type="button" value="4×4" rows="4" cols="4">
+      <input type="button" value="5×5" rows="5" cols="5">
+      <input type="button" value="6×6" rows="6" cols="6">
+      <input type="button" value="7×7" rows="7" cols="7">
+      <input type="button" value="8×8" rows="8" cols="8">
+      <input type="button" value="9×9" rows="9" cols="9">
+      <input type="button" value="10×10" rows="10" cols="10">
+      <input type="button" value="stop" rows="-1" cols="-1">
+      <div>元ネタ<a href="http://www.youtube.com/watch?v=Q4gTV4r0zRs">『フカシギの数え方』 おねえさんといっしょ！ みんなで数えてみよう！</a></div>
+    </div>
+  </body>
+</html>
