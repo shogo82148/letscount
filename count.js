@@ -46,6 +46,9 @@ function countRoute(rows, cols) {
         //訪問済み判定
         if(visited[x][y]) return;
 
+        //ゴールへの経路が無い場合はスキップ
+        if(visited[cols-1][rows] && visited[cols][rows-1]) return;
+
         path.push([x, y]);
 
         //ゴール！
