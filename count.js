@@ -41,11 +41,6 @@ function countRoute(rows, cols) {
     });
 
     function search(x, y) {
-        //postMessage(x + ', ' + y);
-
-        //範囲外判定
-        if(x<0 || x>cols || y<0 || y>rows) return;
-
         //訪問済み判定
         if(visited[x][y]) return;
 
@@ -61,10 +56,10 @@ function countRoute(rows, cols) {
 
         //検索を続行
         visited[x][y] = true;
-        search(x+1, y);
-        search(x, y+1);
-        search(x-1, y);
-        search(x, y-1);
+        if(x < cols) search(x+1, y);
+        if(x > 0) search(x-1, y);
+        if(y < rows) search(x, y+1);
+        if(y > 0) search(x, y-1);
 
         visited[x][y] = false;
         path.pop();
