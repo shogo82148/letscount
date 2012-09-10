@@ -38,7 +38,7 @@ function countRoute(rows, cols) {
     }
 
     // 検索
-    search(0, 0);
+    dfs(0, 0);
 
     // 結果出力
     postMessage({
@@ -46,7 +46,11 @@ function countRoute(rows, cols) {
         time: (nowimpl ? Date.now() : +new Date()) - startTime
     });
 
-    function search(x, y) {
+    // 深さ優先検索
+    function dfs(x, y) {
+        //ゴールへの経路が無い場合はスキップ
+        if(Math.random()<0.05 && !bfs(x, y)) return;
+
         //ゴール！
         if(x==cols && y==rows) {
             path[pathlength++] = x;
@@ -63,14 +67,41 @@ function countRoute(rows, cols) {
         path[pathlength++] = x;
         path[pathlength++] = y;
         visited[x][y] = true;
-
-        if(x < cols && !visited[x+1][y]) search(x+1, y);
-        if(x > 0 && !visited[x-1][y]) search(x-1, y);
-        if(y < rows && !visited[x][y+1]) search(x, y+1);
-        if(y > 0 && !visited[x][y-1]) search(x, y-1);
+        if(x < cols && !visited[x+1][y]) dfs(x+1, y);
+        if(x > 0 && !visited[x-1][y]) dfs(x-1, y);
+        if(y < rows && !visited[x][y+1]) dfs(x, y+1);
+        if(y > 0 && !visited[x][y-1]) dfs(x, y-1);
 
         visited[x][y] = false;
         pathlength -= 2;
+    }
+
+    // 幅優先検索
+    function bfs(x, y) {
+        // 訪問済みフラグをコピー
+        var v = [], tmp;
+        for(i=0;i<=cols;i++) {
+            tmp = [];
+            for(j=0;j<=rows;j++) {
+                tmp.push(visited[i][j]);
+            }
+            v.push(tmp);
+        }
+
+        // 検索
+        var p;
+        var que = [[x, y]];
+        while(que.length > 0) {
+            p = que.shift();
+            x = p[0]; y = p[1];
+            if(x==cols && y==rows) return true;
+            v[x][y] = true;
+            if(x < cols && !v[x+1][y]) que.push([x+1, y]);
+            if(x > 0 && !v[x-1][y]) que.push([x-1, y]);
+            if(y < rows && !v[x][y+1]) que.push([x, y+1]);
+            if(y > 0 && !v[x][y-1]) que.push([x, y-1]);
+        }
+        return false;
     }
 }
 
