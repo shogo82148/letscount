@@ -17,7 +17,7 @@ $(function() {
         $('#problem-text').text(rows + '×'+  cols);
 
         // 新しいワーカーを作成・初期化
-        worker = new Worker('count.js');
+        worker = new Worker('count.js?' + Math.random());
         worker.addEventListener('message', onMessage, false);
         worker.postMessage({rows: rows, cols: cols});
 
@@ -77,12 +77,14 @@ $(function() {
             ctx.strokeStyle = '#d24e63';
             ctx.beginPath();
             var i, p;
-            p = toScreen(path[0][0], path[0][1]);
+            p = toScreen(path[0], path[1]);
             ctx.moveTo(p.x, p.y);
-            for(i=1;i<path.length;i++) {
-                p = toScreen(path[i][0], path[i][1]);
+            for(i=2;i<path.length;i+=2) {
+                p = toScreen(path[i], path[i+1]);
                 ctx.lineTo(p.x, p.y);
+                if(path[i]==cols && path[i+1]==rows) break;
             }
+            //console.log(path);
             ctx.stroke();
         }
 
