@@ -1,5 +1,6 @@
 var PERIOD_SHOW = 50;
 var SLEEP_TIME = 0;
+var nowimpl = !!Date.now;
 
 addEventListener('message', onMessage, false);
 
@@ -13,7 +14,7 @@ function countRoute(rows, cols) {
     var path = []; // これまでに通った経路
     var visited = []; // 訪問履歴
     var i, j;
-    var startTime = (new Date()).getTime();
+    var startTime = nowimpl ? Date.now() : +new Date();
 
     if(rows<=3 && cols<=3) {
         PERIOD_SHOW = 0;
@@ -39,7 +40,7 @@ function countRoute(rows, cols) {
     // 結果出力
     postMessage({
         count: count,
-        time: (new Date()).getTime() - startTime
+        time: (nowimpl ? Date.now() : +new Date()) - startTime
     });
 
     function search(x, y) {
@@ -69,14 +70,14 @@ function countRoute(rows, cols) {
     }
 }
 
-var lastShowTime = (new Date()).getTime();
+var lastShowTime = nowimpl ? Date.now() : +new Date();
 function showPath(count, path) {
-    var now = (new Date()).getTime();
+    var now = nowimpl ? Date.now() : +new Date();
     if(now - lastShowTime < PERIOD_SHOW) return;
     lastShowTime = now;
 
     while(now - lastShowTime < SLEEP_TIME) {
-        now = (new Date()).getTime();
+        now = nowimpl ? Date.now() : +new Date();
     }
     postMessage({
         path: path,
