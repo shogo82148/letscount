@@ -24,6 +24,7 @@ $(function() {
         var xstep = (width - 2*margin) / cols;
         var ystep = (height - 2*margin) / rows;
         var resultText = $('#result-text');
+        var units = ['', '万', '億', '兆', '京', '垓', '𥝱', '穣', '溝', '澗', '正', '載', '極', '恒河沙', '阿僧祇', '那由他', '不可思議', '無量大数']; // 大きな数の単位
 
         drawAllPath();
         $('#start, #goal').show();
@@ -90,31 +91,22 @@ $(function() {
 
         // 経路数の表示
         function showCount(count) {
-            var s = '';
-            if(count >= 1E12) {
-                s = join(s, Math.floor(count / 1E12)) + '兆';
-                count %= 1E12;
+            var s = '', i;
+            for(i=0;i<count.length;i++) {
+                s = (count[i+1] ? addzero(count[i]) : count[i]) + (units[i] || '') + s;
             }
-            if(count >= 100000000) {
-                s = join(s, Math.floor(count / 1E8)) + '億';
-                count %= 1E8;
-            }
-            if(count >= 1E4) {
-                s = join(s, Math.floor(count / 1E4)) + '万';
-                count %= 1E4;
-            }
-            s = join(s, count);
             resultText.text(s);
 
-            function join(s, count) {
-                if(s=='' || count>=1000) {
-                    return s + count;
+            // 0埋めをする
+            function addzero(count) {
+                if(count>=1000) {
+                    return count;
                 } else if(count>=100) {
-                    return s + '0' + count;
+                    return '0' + count;
                 } else if(count>=10) {
-                    return s + '00' + count;
+                    return '00' + count;
                 }
-                return s + '000' + count;
+                return '000' + count;
             }
         }
 

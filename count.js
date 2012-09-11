@@ -11,7 +11,6 @@ function onMessage(e) {
 }
 
 function countRoute(rows, cols) {
-    var count = 0; // 見つけたルートの数
     var path = []; // これまでに通った経路
     var pathlength = 0;
     var visited = []; // 訪問履歴
@@ -50,10 +49,9 @@ function countRoute(rows, cols) {
     function search(x, y) {
         //ゴール！
         if(x==cols && y==rows) {
-            ++count;
             path[pathlength++] = x;
             path[pathlength++] = y;
-            if(count%COUNT_PERIOD_SHOW==0) showPath(count, path);
+            showPath(path);
             pathlength -= 2;
             return;
         }
@@ -76,15 +74,34 @@ function countRoute(rows, cols) {
     }
 }
 
+var count = [0]; // 見つけたルートの数
 var lastShowTime = nowimpl ? Date.now() : +new Date();
-function showPath(count, path) {
+function showPath(path) {
+    // カウントアップ処理
+    var i = 0;
+    count[0] += 1;
+    for(i=0; count[i]>=10000; i++) {
+        count[i] = 0;
+        if(count[i+1]) {
+            count[i+1] += 1;
+        } else {
+            count[i+1] = 1;
+        }
+    }
+
+    if(count[0] % COUNT_PERIOD_SHOW !=0) return;
+
+    // 時間計測
     var now = nowimpl ? Date.now() : +new Date();
     if(now - lastShowTime < PERIOD_SHOW) return;
     lastShowTime = now;
 
+    // ウエイトを挿入
     while(now - lastShowTime < SLEEP_TIME) {
         now = nowimpl ? Date.now() : +new Date();
     }
+
+    // 経路表示
     postMessage({
         path: path,
         count: count
