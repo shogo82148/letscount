@@ -10,8 +10,14 @@ $(function() {
         // 古いワーカーは用済み
         if(worker) {
             worker.terminate();
+
+            // ピコピコ終わり
+            picopico.stop();
         }
         if(rows<=0 || cols<=0) return ;
+
+        //ピコピコする
+        picopico.start();
 
         // 画面更新
         $('#problem-text').text(rows + '×'+  cols);
@@ -40,6 +46,7 @@ $(function() {
                 showCount(data.count);
             }
             if(data.time) {
+                picopico.stop();
                 console.log('Time: ' + data.time + 'ms');
             }
         }
@@ -133,10 +140,90 @@ $(function() {
         });
     }
 
+    // ピコピコする
+    function PicoPico() {
+        var AudioContext = window.AudioContext || window.webkitAudioContext;
+        this.SAMPLE_RATE = 44100;
+        if(AudioContext) {
+            this.ctx = new AudioContext();
+            this.SAMPLE_RATE = this.ctx.sampleRate;
+        }
+    }
+
+    PicoPico.prototype.play = function(freqs) {
+        var SAMPLE_RATE = this.SAMPLE_RATE;
+        var notelength = SAMPLE_RATE * 0.05;
+        var ctx = this.ctx;
+        var src, buf, data, audio;
+        if(ctx) {
+            // For Webkit
+            buf = ctx.createBuffer(1, freqs.length * notelength , SAMPLE_RATE);
+            data = buf.getChannelData(0);
+        } else if(window.Audio && window.Float32Array) {
+            // For Firefox
+            audio = new Audio();
+            if(audio.mozSetup) {
+                audio.mozSetup(1, this.SAMPLE_RATE);
+            }
+            data = new Float32Array(freqs.length * notelength);
+        } else return;
+
+        // 波形データ作成
+        var i, j, offset = 0, x = 0;
+        var step;
+        var volume = ($('#volume').val() || 100) / 100;
+        for(i=0; i<freqs.length; i++) {
+            step = 2 * Math.PI * freqs[i] / this.SAMPLE_RATE;
+            for(j=0;j<notelength;j++) {
+                data[offset] = Math.sin(x)*volume;
+                ++offset;
+                x += step;
+            }
+        }
+
+        // 再生
+        if(ctx) {
+            // for Webkit
+            src = ctx.createBufferSource();
+            src.buffer = buf;
+            src.connect(ctx.destination);
+            src.noteOn(0);
+        } else {
+            // for Firefox
+            if(audio.mozWriteAudio) {
+                audio.mozWriteAudio(data);
+            }
+            audio.play();
+        }
+    };
+
+    // ピコピコ開始
+    PicoPico.prototype.start = function() {
+        var self = this;
+        this.stop();
+        this.timer = setInterval(function() {
+            var i;
+            var freqs = [];
+            for(i = 0; i < 10; i++) {
+                freqs.push(Math.random()*1200+400);
+            }
+            self.play(freqs);
+        }, 500);
+    };
+
+    // ピコピコやめ
+    PicoPico.prototype.stop = function() {
+        if(!this.timer) return;
+        clearInterval(this.timer);
+        this.timer = null;
+    };
+
+    var picopico = new PicoPico();
+
     $(window).resize(resize);
     resize();
 
-    $('input').click(function() {
+    $('input[type=button]').click(function() {
         start($(this).attr('rows')*1, $(this).attr('cols')*1);
     });
 });
