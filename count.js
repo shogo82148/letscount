@@ -39,13 +39,9 @@ function countRoute(rows, cols) {
         visited.push(tmp);
     }
 
-    visited[0][0] = true;
-    path = [0, 0];
-    pathlength = 2;
-
     // 結果出力
     postMessage({
-        count: dfs(1, 0),
+        count: dfs(0, 0),
         funccount: funccount,
         time: (nowimpl ? Date.now() : +new Date()) - startTime
     });
@@ -62,7 +58,7 @@ function countRoute(rows, cols) {
             path[pathlength++] = y;
             showPath(path);
             pathlength -= 2;
-            return [2];
+            return [1];
         }
 
         // 候補を列挙
@@ -80,9 +76,10 @@ function countRoute(rows, cols) {
             if(!key) return [0];
 
             // キャッシュを検索
-            if(cache[key]) {
-                countup(cache[key]);
-                return cache[key];
+            var cacheval = cache[key[0]] || cache[key[1]];
+            if(cacheval) {
+                countup(cacheval);
+                return cacheval;
             }
         }
 
@@ -98,9 +95,9 @@ function countRoute(rows, cols) {
         visited[x][y] = false;
         pathlength -= 2;
 
-//        if(Math.random()<0.1) {
-            cache[key] = count;
-//        }
+        if(key) {
+            cache[key[0]] = count;
+        }
 
         return count;
     }
@@ -164,21 +161,26 @@ function countRoute(rows, cols) {
             }
         }
 
-        return tostring(v);
-
-        function tostring(v) {
-            var i, j;
-            var s = '';
-            for(i=0;i<=cols;i++) {
-                tmp = v[i];
-                for(j=0;j<=rows;j++) {
-                    if(i==nowx && j==nowy) s+= 'x';
-                    else s += tmp[j] ? '1' : '0';
+        var s = ''; // 移動可能領域の文字列表現
+        var s2 = ''; // sの鏡像反転
+        for(i=0;i<=cols;i++) {
+            tmp = v[i];
+            for(j=0;j<=rows;j++) {
+                if(i==nowx && j==nowy) {
+                    s += 'x';
+                } else {
+                    s += tmp[j] ? '1' : '0';
                 }
-                s += '\n';
+                if(i==nowy && j==nowx) {
+                    s2 += 'x';
+                } else {
+                    s2 += v[j][i] ? '1' : '0';
+                }
             }
-            return s;
+            s += '\n';
+            s2 += '\n';
         }
+        return [s, s2];
     }
 }
 
