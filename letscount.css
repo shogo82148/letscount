@@ -7,6 +7,8 @@
     margin: 0px;
     padding: 0px;
     background: -webkit-gradient(linear, left top, right top, from(#c9c9c9), color-stop(0.5, #e1e1e1), to(#c9c9c9));
+    background: -moz-linear-gradient(left, #c9c9c9, #e1e1e1, #c9c9c9);
+    background: linear-gradient(left, #c9c9c9, #e1e1e1, #c9c9c9);
 }
 
 #outer-display {
@@ -22,6 +24,8 @@
 #inner-display {
     background-color: #bababa;
     background: -webkit-gradient(radial, center center, 0, center center, 500, from(#FAFAFA), to(#BABABA));
+    background: -moz-radial-gradient(circle,#FAFAFA, #BABABA);
+    background: radial-gradient(circle,#FAFAFA, #BABABA);
     width: 100%;
     height: 100%;
     padding: 10px;
