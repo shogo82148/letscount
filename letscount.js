@@ -48,6 +48,7 @@ $(function() {
             if(data.time) {
                 picopico.stop();
                 console.log('Time: ' + data.time + 'ms');
+                console.log('Eval: ' + data.funccount);
             }
         }
 
