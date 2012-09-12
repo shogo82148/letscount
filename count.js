@@ -1,5 +1,5 @@
 var PERIOD_SHOW = 50;
-var COUNT_PERIOD_SHOW = 31;
+var COUNT_PERIOD_SHOW = 1;
 var SLEEP_TIME = 0;
 var nowimpl = !!Date.now;
 
@@ -52,7 +52,7 @@ function countRoute(rows, cols) {
 
     // 深さ優先検索
     function dfs(x, y) {
-        var count = [0];
+        var i, count = [0];
 
         funccount = add(funccount, [1]);
 
@@ -65,31 +65,42 @@ function countRoute(rows, cols) {
             return [2];
         }
 
-        //ゴールへの経路が無い場合はスキップ
-        var key = bfs(x, y);
-        if(!key) return [0];
+        // 候補を列挙
+        var nextpath = [];
+        if(x < cols && !visited[x+1][y]) nextpath.push([x+1, y]);
+        if(x > 0 && !visited[x-1][y]) nextpath.push([x-1, y]);
+        if(y < rows && !visited[x][y+1]) nextpath.push([x, y+1]);
+        if(y > 0 && !visited[x][y-1]) nextpath.push([x, y-1]);
 
-        // キャッシュを検索
-        key += ',' + x + ',' + y;
-        if(cache[key]) {
-            countup(cache[key]);
-            return cache[key];
+        if(nextpath.length==0) {
+            return [0];
+        } else if(nextpath.length>1) {
+            //ゴールへの経路が無い場合はスキップ
+            var key = bfs(x, y);
+            if(!key) return [0];
+
+            // キャッシュを検索
+            if(cache[key]) {
+                countup(cache[key]);
+                return cache[key];
+            }
         }
 
         //検索を続行
         path[pathlength++] = x;
         path[pathlength++] = y;
         visited[x][y] = true;
-        if(x < cols && !visited[x+1][y]) count = add(count, dfs(x+1, y));
-        if(x > 0 && !visited[x-1][y]) count = add(count, dfs(x-1, y));
-        if(y < rows && !visited[x][y+1]) count = add(count, dfs(x, y+1));
-        if(y > 0 && !visited[x][y-1]) count = add(count, dfs(x, y-1));
+
+        for(i=0;i<nextpath.length;i++) {
+            count = add(count, dfs(nextpath[i][0], nextpath[i][1]));
+        }
 
         visited[x][y] = false;
         pathlength -= 2;
 
-        if(Math.random()<0.1)
+//        if(Math.random()<0.1) {
             cache[key] = count;
+//        }
 
         return count;
     }
@@ -111,10 +122,12 @@ function countRoute(rows, cols) {
         var p;
         var que = [[cols, rows]];
         var x, y;
+        v[cols][rows] = true;
         while(que.length > 0) {
             p = que.shift();
             x = p[0]; y = p[1];
             v[x][y] = true;
+            if(x==nowx && y==nowy) continue;
             if(x < cols && !v[x+1][y] && !visited[x+1][y])
                 que.push([x+1, y]);
             if(x > 0 && !v[x-1][y] && !visited[x-1][y])
@@ -129,15 +142,43 @@ function countRoute(rows, cols) {
             return false;
         }
 
-        // 到達可能領域を文字列に変換
-        var s = '';
-        for(i=0;i<=cols;i++) {
-            tmp = v[i];
-            for(j=0;j<=rows;j++) {
-                s += tmp[j] ? '1' : '0';
+        // 袋小路を削除
+        var flag = true;
+        while(flag) {
+            flag = false;
+            for(x=0;x<=cols;x++) {
+                for(y=0;y<=rows;y++) {
+                    if(!v[x][y]) continue;
+                    if(x==cols && y==rows) continue;
+                    if(x==nowx && y==nowy) continue;
+                    tmp = 0;
+                    if(x < cols && v[x+1][y]) ++tmp;
+                    if(x > 0 && v[x-1][y]) ++tmp;
+                    if(y < rows && v[x][y+1]) ++tmp;
+                    if(y > 0 && v[x][y-1]) ++tmp;
+                    if(tmp<=1) {
+                        v[x][y] = false;
+                        flag = true;
+                    }
+                }
             }
         }
-        return s;
+
+        return tostring(v);
+
+        function tostring(v) {
+            var i, j;
+            var s = '';
+            for(i=0;i<=cols;i++) {
+                tmp = v[i];
+                for(j=0;j<=rows;j++) {
+                    if(i==nowx && j==nowy) s+= 'x';
+                    else s += tmp[j] ? '1' : '0';
+                }
+                s += '\n';
+            }
+            return s;
+        }
     }
 }
 
@@ -154,6 +195,18 @@ function add(a, b) {
     }
 
     return ans;
+}
+
+function cmp(a, b) {
+    var i;
+    var length = Math.max(a.length, b.length);
+
+    for(i=length-1;i>=0;--i) {
+        if((a[i]||0) < (b[i]||0)) return -1;
+        if((a[i]||0) > (b[i]||0)) return +1;
+    }
+
+    return 0;
 }
 
 var count = [0]; // 見つけたルートの数
@@ -186,4 +239,10 @@ function showPath(path) {
         count: count
     });
     lastShowTime = now;
+}
+
+function log(val) {
+    postMessage({
+        log: val
+    });
 }
