@@ -54,6 +54,24 @@ var letscount = require('./fastcount');
     );
 })();
 
+// Mapからの検索テスト
+(function map_find_test() {
+    var Map = letscount.Map;
+
+    var s = ('xxxxx\n' +
+             'xdoox\n' +
+             'xooox\n' +
+             'xoodx\n' +
+             'xxxxx\n');
+    var m = new Map(s);
+
+    assertEqualArray(m.find('d'), [1, 1]);
+    m.data[1][1] = 'c';
+    assertEqualArray(m.find('d'), [3, 3]);
+    assertEqual(m.find('a'), null);
+})();
+
+
 console.log('No error');
 
 // テストのための補助関数

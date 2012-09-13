@@ -49,6 +49,21 @@ Map.prototype.tostring = function() {
     return s;
 };
 
+// マップから検索
+Map.prototype.find = function(ch) {
+    var data = this.data;
+    var height = data.length;
+    var width = data[0].length;
+    var x, y, tmp;
+    for(y = 0; y < height; ++y) {
+        tmp = data[y];
+        for(x = 0; x < width; ++x) {
+            if(tmp[x]==ch) return [x, y];
+        }
+    }
+    return null;
+};
+
 // 比較を行う
 function cmp(a, b) {
     var i;
