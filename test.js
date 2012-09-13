@@ -30,6 +30,29 @@ var letscount = require('./fastcount');
         '9999,9999,9999+9999,9999,9999=1,9999,9999,9998');
 })();
 
+// Mapのテスト
+(function map_test() {
+    var Map = letscount.Map;
+
+    // 文字列から作成
+    var s = ('xxxxx\n' +
+             'xdoox\n' +
+             'xooox\n' +
+             'xoodx\n' +
+             'xxxxx\n');
+    assertEqual(
+        (new Map(s)).tostring(),
+        s
+    );
+
+    // 大きさを指定して作成
+    assertEqual(
+        (new Map(3,3)).tostring(),
+        ('xxx\n' +
+         'xox\n' +
+         'xxx\n')
+    );
+})();
 
 console.log('No error');
 

@@ -1,5 +1,54 @@
 var isWebWorker = typeof require === 'undefined';
 
+function Map() {
+    var width, height;
+    var s, ch;
+    var data = [];
+    var tmp;
+    var i, x, y;
+
+    if(arguments.length==1) {
+        // 文字列からマップを作成
+        s = arguments[0];
+        tmp = [];
+        for(i = 0; i < s.length; ++i) {
+            ch = s.charAt(i);
+            if(ch=='\n') {
+                data.push(tmp);
+                tmp = [];
+            } else {
+                tmp.push(ch);
+            }
+        }
+    } else {
+        // 指定された大きさで初期化
+        width = arguments[0];
+        height = arguments[1];
+        for(y = 0; y < height; ++y) {
+            tmp = [];
+            for(x = 0; x < width; ++x) {
+                tmp[x] = (x==0 || y==0 || x==width-1 || y==height-1) ? 'x' : 'o';
+            }
+            data.push(tmp);
+        }
+    }
+    this.data = data;
+}
+
+// 文字列へ変換する
+Map.prototype.tostring = function() {
+    var data = this.data;
+    var height = data.length;
+    var width = data[0].length;
+    var y;
+    var s = '';
+    for(y = 0; y < height; ++y) {
+        s += data[y].join('');
+        s += '\n';
+    }
+    return s;
+};
+
 // 比較を行う
 function cmp(a, b) {
     var i;
@@ -38,6 +87,7 @@ if(!isWebWorker) {
     // デバッグ用に関数をエクスポート
     module.exports = {
         cmp: cmp,
-        add: add
+        add: add,
+        Map: Map
     };
 }
