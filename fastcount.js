@@ -84,6 +84,36 @@ Map.prototype.clone = function() {
     return new Map(this.tostring());
 };
 
+
+// 距離の一覧を作成
+Map.prototype.distmap = function(startx, starty) {
+    var result = new Map(this.width, this.height, Infinity);
+    var dist  = result.data;
+    var data = this.data;
+    var que = [[startx, starty, 0]];
+    var p, x, y, d;
+    while(que.length > 0) {
+        // キューから取り出し
+        p = que.shift();
+        x = p[0]; y = p[1]; d = p[2];
+
+        // 到達可能？
+        if(data[y][x] == 'x') continue;
+
+        // 未訪問なら距離を保存
+        if(dist[y][x] != Infinity) continue;
+        dist[y][x] = d;
+
+        // 周囲を検索
+        ++d;
+        que.push([x+1, y, d]);
+        que.push([x-1, y, d]);
+        que.push([x, y+1, d]);
+        que.push([x, y-1, d]);
+    }
+    return result;
+};
+
 // 比較を行う
 function cmp(a, b) {
     var i;

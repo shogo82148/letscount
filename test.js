@@ -121,6 +121,42 @@ var letscount = require('./fastcount');
 })();
 
 
+// 指定点からすべての点への移動距離を計算
+(function map_distmap_test() {
+    var Map = letscount.Map;
+    var s, m;
+    var x = Infinity;
+
+    s = ('xxxxx\n' +
+         'xooox\n' +
+         'xooox\n' +
+         'xooox\n' +
+         'xxxxx\n');
+    m = (new Map(s)).distmap(1, 1);
+
+    assertEqualArray(m.data[0], [x, x, x, x, x]);
+    assertEqualArray(m.data[1], [x, 0, 1, 2, x]);
+    assertEqualArray(m.data[2], [x, 1, 2, 3, x]);
+    assertEqualArray(m.data[3], [x, 2, 3, 4, x]);
+    assertEqualArray(m.data[4], [x, x, x, x, x]);
+
+    s = ('xxxxxx\n' +
+         'xoooox\n' +
+         'xoooox\n' +
+         'xxxxox\n' +
+         'xoxoox\n' +
+         'xxxxxx\n');
+    m = (new Map(s)).distmap(1, 1);
+
+    assertEqualArray(m.data[0], [x, x, x, x, x, x]);
+    assertEqualArray(m.data[1], [x, 0, 1, 2, 3, x]);
+    assertEqualArray(m.data[2], [x, 1, 2, 3, 4, x]);
+    assertEqualArray(m.data[3], [x, x, x, x, 5, x]);
+    assertEqualArray(m.data[4], [x, x, x, 7, 6, x]);
+    assertEqualArray(m.data[5], [x, x, x, x, x, x]);
+})();
+
+
 console.log('No error');
 
 // テストのための補助関数
