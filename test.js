@@ -334,6 +334,22 @@ var letscount = require('./fastcount');
     assertEqual(r.length, 0);
 })();
 
+(function map_countroute_test() {
+    var Map = letscount.Map;
+    assertEqualArray(countRoute(1), [2], '1x1 -> 2');
+    assertEqualArray(countRoute(2), [12], '2x2 -> 12');
+    assertEqualArray(countRoute(3), [184], '3x3 -> 184');
+    assertEqualArray(countRoute(4), [8512], '4x4 -> 8512');
+    assertEqualArray(countRoute(5), [2816, 126], '5x5 -> 126,2816');
+
+    function countRoute(size) {
+        var map = new Map(size+3, size+3);
+        map.data[1][1] = 'd';
+        map.data[size+1][size+1] = 'd';
+        return map.countRoute();
+    }
+})();
+
 console.log('No error');
 
 // テストのための補助関数

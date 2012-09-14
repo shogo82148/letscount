@@ -255,6 +255,40 @@ Map.prototype.analyze = function() {
     return result;
 };
 
+// 経路を数える
+Map.prototype.countRoute = function() {
+
+    // スタートとゴールを検索
+    var p;
+    var startx, starty, goalx, goaly;
+    p = this.findAll('d');
+    startx = p[0][0]; starty = p[0][1];
+    goalx = p[1][0]; goaly = p[1][1];
+    var data = this.data;
+    var self = this;
+    return dfs(startx, starty);
+
+    // 深さ優先検索
+    function dfs(x, y) {
+        if(x == goalx && y == goaly) {
+            return [1];
+        }
+
+        var count = [0];
+        data[y][x] = 'x';
+        if(data[y][x + 1] != 'x')
+            count = add(count, dfs(x + 1, y));
+        if(data[y][x - 1] != 'x')
+            count = add(count, dfs(x - 1, y));
+        if(data[y + 1][x] != 'x')
+            count = add(count, dfs(x, y + 1));
+        if(data[y - 1][x] != 'x')
+            count = add(count, dfs(x, y - 1));
+        data[y][x] = 'o';
+        return count;
+    }
+};
+
 
 // 比較を行う
 function cmp(a, b) {
