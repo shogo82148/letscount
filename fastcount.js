@@ -114,6 +114,31 @@ Map.prototype.distmap = function(startx, starty) {
     return result;
 };
 
+// 距離一覧から一方通行しかできない経路を削除
+Map.prototype.removeOneWay = function() {
+    var width = this.width - 1, height = this.height - 1;
+    var data = this.data;
+    var x, y, points;
+    for(y = 1; y < height; ++y) {
+        for(x = 1; x < width; ++x) {
+            points = [];
+            if(data[y][x+1] < Infinity) points.push([x+1, y]);
+            if(data[y][x-1] < Infinity) points.push([x-1, y]);
+            if(data[y+1][x] < Infinity) points.push([x, y+1]);
+            if(data[y-1][x] < Infinity) points.push([x, y-1]);
+            if(points.length<=1 ||
+               points.length==2 &&
+               (points[0][0] == points[1][0] ||
+                points[0][1] == points[1][1] ||
+                data[points[1][1]][points[0][0]]>=Infinity))
+            {
+                data[y][x] = Infinity;
+            }
+        }
+    }
+    return this;
+};
+
 // 比較を行う
 function cmp(a, b) {
     var i;

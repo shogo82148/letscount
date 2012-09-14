@@ -156,6 +156,90 @@ var letscount = require('./fastcount');
     assertEqualArray(m.data[5], [x, x, x, x, x, x]);
 })();
 
+// 一方通行しかできない道を削除
+(function map_removeoneway_test() {
+    var Map = letscount.Map;
+    var x = Infinity;
+    var s, m;
+
+    s = ('xxxxxxx\n' +
+         'xooooox\n' +
+         'xxxxxxx\n'
+        );
+    m = (new Map(s)).distmap(1,1).removeOneWay();
+    assertEqualArray(m.data[0], [x, x, x, x, x, x, x], '\n'+s+0);
+    assertEqualArray(m.data[1], [x, x, x, x, x, x, x], '\n'+s+1);
+    assertEqualArray(m.data[2], [x, x, x, x, x, x, x], '\n'+s+2);
+
+    s = ('xxx\n' +
+         'xox\n' +
+         'xox\n' +
+         'xox\n' +
+         'xox\n' +
+         'xox\n' +
+         'xxx\n'
+        );
+    m = (new Map(s)).distmap(1,1).removeOneWay();
+    assertEqualArray(m.data[0], [x, x, x], '\n'+s+0);
+    assertEqualArray(m.data[1], [x, x, x], '\n'+s+1);
+    assertEqualArray(m.data[2], [x, x, x], '\n'+s+2);
+    assertEqualArray(m.data[3], [x, x, x], '\n'+s+3);
+    assertEqualArray(m.data[4], [x, x, x], '\n'+s+4);
+    assertEqualArray(m.data[5], [x, x, x], '\n'+s+5);
+    assertEqualArray(m.data[6], [x, x, x], '\n'+s+6);
+
+    s = ('xxxxx\n' +
+         'xooox\n' +
+         'xxxox\n' +
+         'xooox\n' +
+         'xxxxx\n'
+        );
+    m = (new Map(s)).distmap(1,1).removeOneWay();
+    assertEqualArray(m.data[0], [x, x, x, x, x], '\n'+s+0);
+    assertEqualArray(m.data[1], [x, x, x, x, x], '\n'+s+1);
+    assertEqualArray(m.data[2], [x, x, x, x, x], '\n'+s+2);
+    assertEqualArray(m.data[3], [x, x, x, x, x], '\n'+s+3);
+    assertEqualArray(m.data[4], [x, x, x, x, x], '\n'+s+4);
+
+    s = ('xxxxx\n' +
+         'xooox\n' +
+         'xoxxx\n' +
+         'xooox\n' +
+         'xxxxx\n'
+        );
+    m = (new Map(s)).distmap(1,1).removeOneWay();
+    assertEqualArray(m.data[0], [x, x, x, x, x], '\n'+s+0);
+    assertEqualArray(m.data[1], [x, x, x, x, x], '\n'+s+1);
+    assertEqualArray(m.data[2], [x, x, x, x, x], '\n'+s+2);
+    assertEqualArray(m.data[3], [x, x, x, x, x], '\n'+s+3);
+    assertEqualArray(m.data[4], [x, x, x, x, x], '\n'+s+4);
+
+    s = ('xxxxx\n' +
+         'xooox\n' +
+         'xooox\n' +
+         'xooox\n' +
+         'xxxxx\n'
+        );
+    m = (new Map(s)).distmap(1,1).removeOneWay();
+    assertEqualArray(m.data[0], [x, x, x, x, x], '\n'+s+0);
+    assertEqualArray(m.data[1], [x, 0, 1, 2, x], '\n'+s+1);
+    assertEqualArray(m.data[2], [x, 1, 2, 3, x], '\n'+s+2);
+    assertEqualArray(m.data[3], [x, 2, 3, 4, x], '\n'+s+3);
+    assertEqualArray(m.data[4], [x, x, x, x, x], '\n'+s+4);
+
+    s = ('xxxxxxx\n' +
+         'xooxoox\n' +
+         'xooooox\n' +
+         'xooxoox\n' +
+         'xxxxxxx\n'
+        );
+    m = (new Map(s)).distmap(1,1).removeOneWay();
+    assertEqualArray(m.data[0], [x, x, x, x, x, x, x], '\n'+s+0);
+    assertEqualArray(m.data[1], [x, 0, 1, x, 5, 6, x], '\n'+s+1);
+    assertEqualArray(m.data[2], [x, 1, 2, x, 4, 5, x], '\n'+s+2);
+    assertEqualArray(m.data[3], [x, 2, 3, x, 5, 6, x], '\n'+s+3);
+    assertEqualArray(m.data[4], [x, x, x, x, x, x, x], '\n'+s+4);
+})();
 
 console.log('No error');
 
