@@ -103,11 +103,44 @@ function add(a, b) {
     return ans;
 }
 
+// 掛け算を行う
+function mul(a, b) {
+    var i, j;
+    var alength = a.length;
+    var blength = b.length;
+    var ablength = alength + blength - 1;
+    var ans = [];
+
+    // 初期化
+    for(i = 0; i < ablength; ++i) {
+        ans[i] = 0;
+    }
+
+    // 掛け算
+    for(i = 0; i < alength; ++i) {
+        for(j = 0; j < blength; ++j) {
+            ans[i+j] += a[i] * b[j];
+        }
+    }
+
+    // 繰り上げ処理
+    var carry = 0;
+    var digit;
+    for(i = 0; i < ablength || carry > 0; ++i) {
+        digit = (ans[i]||0) + carry;
+        carry = (digit / 10000) | 0;
+        ans[i] = digit % 10000;
+    }
+
+    return ans;
+}
+
 if(!isWebWorker) {
     // デバッグ用に関数をエクスポート
     module.exports = {
         cmp: cmp,
         add: add,
+        mul: mul,
         Map: Map
     };
 }

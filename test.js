@@ -30,6 +30,15 @@ var letscount = require('./fastcount');
         '9999,9999,9999+9999,9999,9999=1,9999,9999,9998');
 })();
 
+// 掛け算のテスト
+(function mul_test() {
+    var mul = letscount.mul;
+
+    assertEqualArray(mul([10], [11]), [110], '10*11=110');
+    assertEqualArray(mul([100], [100]), [0,1], '100*100=1,0000');
+    assertEqualArray(mul([1111, 1111, 1], [1111, 1111, 1]), [4321, 8765, 6789, 2345, 1], '111111111*111111111=1,2345,6789,8765,4321');
+})();
+
 // Mapのテスト
 (function map_test() {
     var Map = letscount.Map;
