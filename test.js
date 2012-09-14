@@ -255,6 +255,85 @@ var letscount = require('./fastcount');
     assertEqualArray(m.data[4], [x, x, x, x, x, x, x], '\n'+s+4);
 })();
 
+// 対象の分析
+(function map_test_analyze() {
+    var Map = letscount.Map;
+    var s, r;
+
+    // 経路なし
+    s = ('xxxxxxx\n' +
+         'xdoxoox\n' +
+         'xooxoox\n' +
+         'xooxodx\n' +
+         'xxxxxxx\n'
+        );
+    r = (new Map(s)).analyze();
+    assertEqual(r, null);
+
+    // 経路あり
+    s = ('xxxxxxxx\n' +
+         'xdoxxoox\n' +
+         'xoooooox\n' +
+         'xooxxodx\n' +
+         'xxxxxxxx\n'
+        );
+    r = (new Map(s)).analyze();
+    assertEqual(r.length, 2);
+    assertEqual(r[0].tostring(),
+                'xxxx\n' +
+                'xdox\n' +
+                'xodx\n' +
+                'xoox\n' +
+                'xxxx\n'
+               );
+    assertEqual(r[1].tostring(),
+                'xxxx\n' +
+                'xoox\n' +
+                'xdox\n' +
+                'xodx\n' +
+                'xxxx\n'
+               );
+
+    // 分岐あり
+    s = ('xxxxxxxx\n' +
+         'xdoxxoox\n' +
+         'xoooooox\n' +
+         'xoxxxoox\n' +
+         'xooxxoox\n' +
+         'xooxxodx\n' +
+         'xxxxxxxx\n'
+        );
+    r = (new Map(s)).analyze();
+    assertEqual(r.length, 2);
+    assertEqual(r[0].tostring(),
+                'xxxx\n' +
+                'xdox\n' +
+                'xodx\n' +
+                'xxxx\n'
+               );
+    assertEqual(r[1].tostring(),
+                'xxxx\n' +
+                'xoox\n' +
+                'xdox\n' +
+                'xoox\n' +
+                'xoox\n' +
+                'xodx\n' +
+                'xxxx\n'
+               );
+
+    // 一本道
+    s = ('xxxxxxxx\n' +
+         'xdooooox\n' +
+         'xxxxxxox\n' +
+         'xoooooox\n' +
+         'xoxxxxxx\n' +
+         'xooooodx\n' +
+         'xxxxxxxx\n'
+        );
+    r = (new Map(s)).analyze();
+    assertEqual(r.length, 0);
+})();
+
 console.log('No error');
 
 // テストのための補助関数

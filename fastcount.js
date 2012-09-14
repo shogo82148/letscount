@@ -26,7 +26,7 @@ function Map() {
         width = arguments[0];
         height = arguments[1];
         values = arguments[2];
-        if(values) {
+        if(typeof values !== 'undefined') {
             if(values instanceof Function) {
                 funcvalues = arguments[2];
             } else {
@@ -154,6 +154,107 @@ Map.prototype.removeOneWay = function() {
     }
     return this;
 };
+
+// 分析を行う
+Map.prototype.analyze = function() {
+    // startからすべての点への距離を求める
+    var doors = this.findAll('d');
+    var from_start = this.distmap(doors[0][0], doors[0][1]);
+
+    // d-d間をつなぐ経路は存在しない
+    var distance = from_start.data[doors[1][1]][doors[1][0]];
+    if(distance >= Infinity) return null;
+
+    // goalからすべての点への距離を求める
+    var from_goal = this.distmap(doors[1][0], doors[1][1]);
+
+    // 一方通行の経路を削除
+    from_start.removeOneWay();
+
+    from_start = from_start.data;
+    from_goal = from_goal.data;
+
+    var result = [];
+    var width = this.width;
+    var height = this.height;
+    var used = (new Map(width, height, false)).data;
+    var x, y;
+    var que, p, xx, yy, map, data;
+    var mindist, minpos, maxdist, maxpos;
+    var dist;
+    var minx, maxx, miny, maxy;
+
+    for(y = 0; y < height; ++y) {
+        for(x = 0; x < width; ++x) {
+            if(from_start[y][x]>=Infinity) continue;
+            if(used[y][x]) continue;
+
+            // 同じ領域を塗りつぶす
+            map = new Map(width, height, 'x');
+            data = map.data;
+            que = [[x, y]];
+            mindist = Infinity;
+            minpos = null;
+            maxdist = -1;
+            maxpos = null;
+            minx = Infinity; maxx = -1;
+            miny = Infinity; maxy = -1;
+            while(que.length > 0) {
+                // 塗りつぶし対象となる点を取得
+                p = que.shift();
+                xx = p[0]; yy = p[1];
+                dist = from_start[yy][xx];
+                if(dist >= Infinity) continue;
+                if(used[yy][xx]) continue;
+
+                // 塗りつぶし
+                used[yy][xx] = true;
+                data[yy][xx] = 'o';
+
+                // xとyの値域を保存
+                if(xx < minx) minx = xx;
+                if(xx > maxx) maxx = xx;
+                if(yy < miny) miny = yy;
+                if(yy > maxy) maxy = yy;
+
+                // スタートとゴールを検索
+                if(dist+from_goal[yy][xx]==distance) {
+                    if(dist < mindist) {
+                        minpos = [xx, yy];
+                        mindist = dist;
+                    }
+                    if(dist > maxdist) {
+                        maxpos = [xx, yy];
+                        maxdist = dist;
+                    }
+                }
+
+                // 隣接する点を検索
+                que.push([xx+1, yy]);
+                que.push([xx-1, yy]);
+                que.push([xx, yy+1]);
+                que.push([xx, yy-1]);
+            }
+
+            // スタートとゴールを設置
+            if(!minpos || !maxpos) continue;
+            data[minpos[1]][minpos[0]] = 'd';
+            data[maxpos[1]][maxpos[0]] = 'd';
+
+            // できるだけ小さくする
+            --minx; --miny;
+            ++maxx; ++maxy;
+            result.push(
+                new Map(maxx - minx + 1, maxy - miny + 1, function(x, y) {
+                    return data[y + miny][x + minx];
+                }
+            ));
+        }
+    }
+
+    return result;
+};
+
 
 // 比較を行う
 function cmp(a, b) {
