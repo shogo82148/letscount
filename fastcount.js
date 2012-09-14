@@ -238,6 +238,7 @@ Map.prototype.analyze = function() {
 
             // スタートとゴールを設置
             if(!minpos || !maxpos) continue;
+            if(minpos[0]==maxpos[0] && minpos[1]==maxpos[1]) continue;
             data[minpos[1]][minpos[0]] = 'd';
             data[maxpos[1]][maxpos[0]] = 'd';
 
@@ -256,17 +257,20 @@ Map.prototype.analyze = function() {
 };
 
 // 経路を数える
+var cache = {};
 Map.prototype.countRoute = function() {
-
     // スタートとゴールを検索
     var p;
     var startx, starty, goalx, goaly;
     p = this.findAll('d');
+    if(p.length!=2) throw 'start and goal needed';
     startx = p[0][0]; starty = p[0][1];
     goalx = p[1][0]; goaly = p[1][1];
     var data = this.data;
     var self = this;
-    return dfs(startx, starty);
+    count = dfs(startx, starty);
+    data[starty][startx] = 'd';
+    return count;
 
     // 深さ優先検索
     function dfs(x, y) {
@@ -274,7 +278,36 @@ Map.prototype.countRoute = function() {
             return [1];
         }
 
-        var count = [0];
+        // キャッシュを検索
+        data[y][x] = 'd';
+        var key = self.tostring();
+        var count;
+        if(cache[key]) {
+            data[y][x] = 'o';
+            return cache[key];
+        }
+
+        // 小さい単位に分解して計算
+        var analysis = self.analyze();
+        data[y][x] = 'o';
+        if(!analysis) return [0];
+        if(analysis.length==0) return [1];
+        if(analysis.length == 1) {
+            // マップが簡単になる場合は再検索
+            if(analysis[0].tostring()!=key) {
+                return analysis[0].countRoute();
+            }
+        } else {
+            // ぞれぞれの結果を結合
+            count = [1];
+            var i;
+            for(i = 0; i < analysis.length; ++i) {
+                count = mul(count, analysis[i].countRoute());
+            }
+            return count;
+        }
+
+        count = [0];
         data[y][x] = 'x';
         if(data[y][x + 1] != 'x')
             count = add(count, dfs(x + 1, y));
@@ -285,6 +318,7 @@ Map.prototype.countRoute = function() {
         if(data[y - 1][x] != 'x')
             count = add(count, dfs(x, y - 1));
         data[y][x] = 'o';
+        cache[key] = count;
         return count;
     }
 };

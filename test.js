@@ -332,6 +332,17 @@ var letscount = require('./fastcount');
         );
     r = (new Map(s)).analyze();
     assertEqual(r.length, 0);
+
+    // 分岐あり一本道
+    s = ('xxxx\n' +
+         'xdxx\n' +
+         'xdox\n' +
+         'xoox\n' +
+         'xxxx\n'
+        );
+    r = (new Map(s)).analyze();
+    assertEqual(r.length, 0);
+
 })();
 
 (function map_countroute_test() {
@@ -341,6 +352,7 @@ var letscount = require('./fastcount');
     assertEqualArray(countRoute(3), [184], '3x3 -> 184');
     assertEqualArray(countRoute(4), [8512], '4x4 -> 8512');
     assertEqualArray(countRoute(5), [2816, 126], '5x5 -> 126,2816');
+    assertEqualArray(countRoute(6), [564, 7578, 5], '6x6 -> 5,7578,0564');
 
     function countRoute(size) {
         var map = new Map(size+3, size+3);
