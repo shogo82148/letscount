@@ -51,15 +51,71 @@ function Map() {
 }
 
 // 文字列へ変換する
-Map.prototype.tostring = function() {
+Map.prototype.tostring = function(direction) {
     var data = this.data;
     var height = this.height;
     var width = this.width;
-    var y;
+    var x, y;
     var s = '';
-    for(y = 0; y < height; ++y) {
-        s += data[y].join('');
-        s += '\n';
+    direction = direction || 0;
+    if(direction==0) {
+        // そのまま
+        for(y = 0; y < height; ++y) {
+            s += data[y].join('') + '\n';
+        }
+    } else if(direction==1) {
+        // 反転
+        for(y = 0; y < height; ++y) {
+            for(x = width-1; x>=0; --x) {
+                s += data[y][x];
+            }
+            s += '\n';
+        }
+    } else if(direction==2) {
+        // 90度回転
+        for(x = width - 1; x>=0; --x) {
+            for(y = 0; y < height; ++y) {
+                s += data[y][x];
+            }
+            s += '\n';
+        }
+    } else if(direction==3) {
+        // 90度回転+反転
+        for(x = width - 1; x>=0; --x) {
+            for(y = height - 1; y >= 0; --y) {
+                s += data[y][x];
+            }
+            s += '\n';
+        }
+    } else if(direction==4) {
+        // 180度回転
+        for(y = height - 1; y >= 0; --y) {
+            for(x = width-1; x>=0; --x) {
+                s += data[y][x];
+            }
+            s += '\n';
+        }
+    } else if(direction==5) {
+        // 180度回転 + 反転
+        for(y = height - 1; y >= 0; --y) {
+            s += data[y].join('') + '\n';
+        }
+    } else if(direction==6) {
+        // 270度回転
+        for(x = 0; x < width; ++x) {
+            for(y = height - 1; y >= 0; --y) {
+                s += data[y][x];
+            }
+            s += '\n';
+        }
+    } else if(direction==7) {
+        // 270度回転 + 反転
+        for(x = 0; x < width; ++x) {
+            for(y = 0; y < height; ++y) {
+                s += data[y][x];
+            }
+            s += '\n';
+        }
     }
     return s;
 };
@@ -281,10 +337,17 @@ Map.prototype.countRoute = function() {
         // キャッシュを検索
         data[y][x] = 'd';
         var key = self.tostring();
-        var count;
-        if(cache[key]) {
+        var count = cache[self.tostring(0)] ||
+                cache[self.tostring(1)] ||
+                cache[self.tostring(2)] ||
+                cache[self.tostring(3)] ||
+                cache[self.tostring(4)] ||
+                cache[self.tostring(5)] ||
+                cache[self.tostring(6)] ||
+                cache[self.tostring(7)];
+        if(count) {
             data[y][x] = 'o';
-            return cache[key];
+            return count;
         }
 
         // 小さい単位に分解して計算

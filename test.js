@@ -82,6 +82,83 @@ var letscount = require('./fastcount');
 
 })();
 
+// 回転のテスト
+(function map_rotate_test() {
+    var Map = letscount.Map;
+    var s = ('xxxxx\n' +
+             'xdoox\n' +
+             'xodox\n' +
+             'xxxxx\n');
+    assertEqual(
+        (new Map(s)).tostring(0),
+        ('xxxxx\n' +
+         'xdoox\n' +
+         'xodox\n' +
+         'xxxxx\n'),
+        '0degree, no mirror'
+    );
+    assertEqual(
+        (new Map(s)).tostring(1),
+        ('xxxxx\n' +
+         'xoodx\n' +
+         'xodox\n' +
+         'xxxxx\n'),
+        '0degree, mirror'
+    );
+    assertEqual(
+        (new Map(s)).tostring(2),
+        ('xxxx\n' +
+         'xoox\n' +
+         'xodx\n' +
+         'xdox\n' +
+         'xxxx\n'),
+        '90degree, no mirror'
+    );
+    assertEqual(
+        (new Map(s)).tostring(3),
+        ('xxxx\n' +
+         'xoox\n' +
+         'xdox\n' +
+         'xodx\n' +
+         'xxxx\n'),
+        '90degree, mirror'
+    );
+    assertEqual(
+        (new Map(s)).tostring(4),
+        ('xxxxx\n' +
+         'xodox\n' +
+         'xoodx\n' +
+         'xxxxx\n'),
+        '180degree, no mirror'
+    );
+    assertEqual(
+        (new Map(s)).tostring(5),
+        ('xxxxx\n' +
+         'xodox\n' +
+         'xdoox\n' +
+         'xxxxx\n'),
+        '180degree, mirror'
+    );
+    assertEqual(
+        (new Map(s)).tostring(6),
+        ('xxxx\n' +
+         'xodx\n' +
+         'xdox\n' +
+         'xoox\n' +
+         'xxxx\n'),
+        '270degree, no mirror'
+    );
+    assertEqual(
+        (new Map(s)).tostring(7),
+        ('xxxx\n' +
+         'xdox\n' +
+         'xodx\n' +
+         'xoox\n' +
+         'xxxx\n'),
+        '270degree, mirror'
+    );
+})();
+
 // Mapからの検索テスト
 (function map_find_test() {
     var Map = letscount.Map;
@@ -353,6 +430,7 @@ var letscount = require('./fastcount');
     assertEqualArray(countRoute(4), [8512], '4x4 -> 8512');
     assertEqualArray(countRoute(5), [2816, 126], '5x5 -> 126,2816');
     assertEqualArray(countRoute(6), [564, 7578, 5], '6x6 -> 5,7578,0564');
+    assertEqualArray(countRoute(7), [3252, 6005, 7893], '7x7 -> 7893,6005,3252');
 
     function countRoute(size) {
         var map = new Map(size+3, size+3);
