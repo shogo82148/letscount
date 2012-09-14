@@ -61,6 +61,25 @@ var letscount = require('./fastcount');
          'xox\n' +
          'xxx\n')
     );
+
+    // 各点の値を指定して作成
+    assertEqual(
+        (new Map(3,3, 'z')).tostring(),
+        ('zzz\n' +
+         'zzz\n' +
+         'zzz\n')
+    );
+
+    // 各点の値を関数で指定して作成
+    assertEqual(
+        (new Map(3,3, function(x, y) {
+            return x + y;
+        })).tostring(),
+        ('012\n' +
+         '123\n' +
+         '234\n')
+    );
+
 })();
 
 // Mapからの検索テスト

@@ -3,6 +3,7 @@ var isWebWorker = typeof require === 'undefined';
 function Map() {
     var width, height;
     var s, ch;
+    var values, funcvalues;
     var data = [];
     var tmp;
     var i, x, y;
@@ -24,22 +25,36 @@ function Map() {
         // 指定された大きさで初期化
         width = arguments[0];
         height = arguments[1];
+        values = arguments[2];
+        if(values) {
+            if(values instanceof Function) {
+                funcvalues = arguments[2];
+            } else {
+                funcvalues = function() {return values;};
+            }
+        } else {
+            funcvalues = function(x, y) {
+                return (x==0 || y==0 || x==width-1 || y==height-1) ? 'x' : 'o';
+            };
+        }
         for(y = 0; y < height; ++y) {
             tmp = [];
             for(x = 0; x < width; ++x) {
-                tmp[x] = (x==0 || y==0 || x==width-1 || y==height-1) ? 'x' : 'o';
+                tmp[x] = funcvalues(x, y);
             }
             data.push(tmp);
         }
     }
+    this.height = data.length;
+    this.width = data[0].length;
     this.data = data;
 }
 
 // 文字列へ変換する
 Map.prototype.tostring = function() {
     var data = this.data;
-    var height = data.length;
-    var width = data[0].length;
+    var height = this.height;
+    var width = this.width;
     var y;
     var s = '';
     for(y = 0; y < height; ++y) {
