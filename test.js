@@ -99,6 +99,20 @@ var letscount = require('./fastcount');
     assertEqual(m.find('a'), null);
 })();
 
+// Mapからの検索テスト
+(function map_findall_test() {
+    var Map = letscount.Map;
+
+    var s = ('xxxxx\n' +
+             'xdoox\n' +
+             'xooox\n' +
+             'xoodx\n' +
+             'xxxxx\n');
+    var m = new Map(s);
+    var res = m.findAll('d');
+    assertEqualArray(res[0], [1, 1]);
+    assertEqualArray(res[1], [3, 3]);
+})();
 
 // Map.cloneのテスト
 (function map_clone_test() {

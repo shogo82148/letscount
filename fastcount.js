@@ -79,6 +79,22 @@ Map.prototype.find = function(ch) {
     return null;
 };
 
+// マップからすべて検索
+Map.prototype.findAll = function(ch) {
+    var data = this.data;
+    var height = data.length;
+    var width = data[0].length;
+    var x, y, tmp;
+    var result = [];
+    for(y = 0; y < height; ++y) {
+        tmp = data[y];
+        for(x = 0; x < width; ++x) {
+            if(tmp[x]==ch) result.push([x, y]);
+        }
+    }
+    return result;
+};
+
 // 自分のクローンを作る
 Map.prototype.clone = function() {
     return new Map(this.tostring());
