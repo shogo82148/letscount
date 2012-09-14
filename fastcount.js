@@ -64,6 +64,11 @@ Map.prototype.find = function(ch) {
     return null;
 };
 
+// 自分のクローンを作る
+Map.prototype.clone = function() {
+    return new Map(this.tostring());
+};
+
 // 比較を行う
 function cmp(a, b) {
     var i;

@@ -72,6 +72,27 @@ var letscount = require('./fastcount');
 })();
 
 
+// Map.cloneのテスト
+(function map_clone_test() {
+    var Map = letscount.Map;
+
+    var s = ('xxxxx\n' +
+             'xdoox\n' +
+             'xooox\n' +
+             'xoodx\n' +
+             'xxxxx\n');
+    var m = new Map(s);
+    var m2 = m.clone();
+
+    // クローン元とクローン結果は等しい
+    assertEqual(m2.tostring(), s);
+
+    // クローン元を変更してもクローン結果は変わらない
+    m.data[0][0] = '*';
+    assertEqual(m2.tostring(), s);
+})();
+
+
 console.log('No error');
 
 // テストのための補助関数
