@@ -332,6 +332,54 @@ var letscount = require('./fastcount');
     assertEqualArray(m.data[4], [x, x, x, x, x, x, x], '\n'+s+4);
 })();
 
+// 検索を打ち切っていい点を探す
+(function map_getstop_test() {
+    var Map = letscount.Map;
+    var x = Infinity;
+    var m = new Map(3, 3);
+    m.data = [
+        [x, 0, 0],
+        [0, 0, 0],
+        [0, 0, x]
+    ];
+    assertEqual(m.getStop().data[1][1], true);
+
+    m.data = [
+        [0, 0, x],
+        [0, 0, 0],
+        [x, 0, 0]
+    ];
+    assertEqual(m.getStop().data[1][1], true);
+
+    m.data = [
+        [x, 0, 0],
+        [x, 0, 0],
+        [0, 0, x]
+    ];
+    assertEqual(m.getStop().data[1][1], true);
+
+    m.data = [
+        [0, 0, x],
+        [0, 0, x],
+        [x, 0, 0]
+    ];
+    assertEqual(m.getStop().data[1][1], true);
+
+    m.data = [
+        [0, 0, 0],
+        [0, 0, 0],
+        [0, 0, 0]
+    ];
+    assertEqual(m.getStop().data[1][1], false);
+
+    m.data = [
+        [x, 0, 0],
+        [x, 0, 0],
+        [x, 0, 0]
+    ];
+    assertEqual(m.getStop().data[1][1], false);
+})();
+
 // 対象の分析
 (function map_test_analyze() {
     var Map = letscount.Map;

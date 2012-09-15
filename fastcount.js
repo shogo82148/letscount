@@ -211,6 +211,26 @@ Map.prototype.removeOneWay = function() {
     return this;
 };
 
+// 検索を続行する必要の無い点を列挙
+Map.prototype.getStop = function() {
+    var width = this.width;
+    var height = this.height;
+    var result = new Map(width, height, false);
+    var data = this.data;
+    var stops = result.data;
+    var x, y;
+
+    for(y = 1; y < height - 1; ++y) {
+        for(x = 1; x < width - 1; ++x) {
+            stops[y][x] = (
+                data[y-1][x-1] >= Infinity && data[y+1][x+1] >= Infinity ||
+                data[y-1][x+1] >= Infinity && data[y+1][x-1] >= Infinity);
+        }
+    }
+
+    return result;
+};
+
 // 分析を行う
 Map.prototype.analyze = function() {
     // startからすべての点への距離を求める
