@@ -34,6 +34,7 @@ function Graph(edges, start, goal) {
     this.edge_selected = edge_selected;
     this.edge_unselected = edge_unselected;
 
+    this.selected = [];
     this.cache = {};
 }
 
@@ -86,7 +87,9 @@ Graph.prototype._count = function(i) {
     if(flag) {
         ++this.edge_unselected[a];
         ++this.edge_unselected[b];
+        this.selected.push(false);
         cnt = add(cnt, this._count(i+1));
+        this.selected.pop();
         --this.edge_unselected[a];
         --this.edge_unselected[b];
     }
@@ -100,6 +103,9 @@ Graph.prototype._count = function(i) {
 
     // 輪を作らないようにする
     flag = flag && (a != d && b != c);
+
+    // 三叉路を作らない
+    flag = flag && this.edge_selected[a] < 2 && this.edge_selected[b] < 2;
 
     if(a == this.start || a == this.goal) {
         // スタートとゴールからは枝が一本しか出ない
@@ -125,7 +131,9 @@ Graph.prototype._count = function(i) {
         mate[b] = 0;
         mate[c] = d;
         mate[d] = c;
+        this.selected.push(true);
         cnt = add(cnt, this._count(i+1));
+        this.selected.pop();
         mate[a] = c;
         mate[b] = d;
         mate[c] = a;
@@ -175,7 +183,7 @@ Graph.prototype.frontier = function() {
     var edge_selected = this.edge_selected;
     var edge_unselected = this.edge_unselected;
     var length = edge_count.length;
-    //console.log(edge_selected, edge_unselected, edge_count, length);
+
     for(i = 1; i < length; ++i) {
         if(edge_selected[i] == 0 && edge_unselected[i] == 0) {
             continue;
@@ -187,6 +195,20 @@ Graph.prototype.frontier = function() {
     }
     return f;
 };
+
+// 比較を行う
+function cmp(a, b) {
+    var i;
+    var length = Math.max(a.length, b.length);
+    var digita, digitb;
+    for(i = length-1; i >= 0; --i) {
+        digita = a[i] || 0;
+        digitb = b[i] || 0;
+        if(digita < digitb) return -1;
+        if(digita > digitb) return 1;
+    }
+    return 0;
+}
 
 // 足し算を行う
 function add(a, b) {
@@ -208,20 +230,38 @@ function add(a, b) {
     return ans;
 }
 
+function clone(a) {
+    var b = [];
+    var i;
+    for(i=0; i<a.length; ++i) {
+        b.push(a[i]);
+    }
+    return b;
+}
+
+function grid(w, h) {
+    var edge = [];
+    var i, j;
+    for(i = 0; i < h; ++i) {
+        for(j = 0; j < w; ++j) {
+            edge.push([n(i,j),n(i,j+1)]);
+            edge.push([n(i,j),n(i+1,j)]);
+        }
+        edge.push([n(i,w),n(i+1,w)]);
+    }
+    for(j = 0; j < w; ++j) {
+        edge.push([n(h,j),n(h,j+1)]);
+    }
+    return edge;
+
+    function n(i, j) {
+        return 1 + i * (w + 1) + j;
+    }
+}
+
 if(typeof console !== 'undefined') (function() {
-    var edge = [
-        [1, 2],
-        [1, 3],
-        [2, 4],
-        [2, 5],
-        [3, 6],
-        [4, 5],
-        [4, 7],
-        [5, 9],
-        [6, 8],
-        [7, 9],
-        [7, 8]
-        ];
-    var g = new Graph(edge, 1, 9);
+    edge = grid(11, 11);
+    var g = new Graph(edge, 1, 1);
+    g.goal = g.node_count;
     console.log(g.count());
 })();
