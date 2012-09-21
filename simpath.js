@@ -13,12 +13,26 @@ function Graph(edges, start, goal) {
     }
     this.node_count = node_count;
 
-    // mate配列を初期化
-    var mate = [];
+    // 各点の情報を初期化
+    var mate = []; // パスの接続情報
+    var edge_count = []; //各点に出入りする枝の数
+    var edge_selected = []; // 選択された枝の数
+    var edge_unselected = []; // 選択されなかった枝の数
     for(i = 0; i <= node_count; ++i) {
         mate.push(i);
+        edge_count.push(0);
+        edge_selected.push(0);
+        edge_unselected.push(0);
     }
+    for(i = 0; i < length; ++i) {
+        ++edge_count[edges[i][0]];
+        ++edge_count[edges[i][1]];
+    }
+
     this.mate = mate;
+    this.edge_count = edge_count;
+    this.edge_selected = edge_selected;
+    this.edge_unselected = edge_unselected;
 }
 
 Graph.prototype._count = function(i) {
@@ -37,9 +51,29 @@ Graph.prototype._count = function(i) {
     // 枝刈り
     flag = true;
 
+    if(a == this.start || a == this.goal) {
+        // スタートとゴールからは枝が一本しか出ない
+        flag = flag && this.edge_unselected[a] != this.edge_count[a] - 1;
+    } else {
+        // それ以外の点では入る枝と出る枝が必要
+        flag = flag && (this.edge_selected[a] != 1 || this.edge_unselected[a] != this.edge_count[a] - 2);
+    }
+
+    if(b == this.start || b == this.goal) {
+        // スタートとゴールからは枝が一本しか出ない
+        flag = flag && this.edge_unselected[b] != this.edge_count[b] - 1;
+    } else {
+        // それ以外の点では入る枝と出る枝が必要
+        flag = flag && (this.edge_selected[b] != 1 || this.edge_unselected[b] != this.edge_count[b] - 2);
+    }
+
     // 枝iは使わない
     if(flag) {
+        ++this.edge_unselected[a];
+        ++this.edge_unselected[b];
         cnt = add(cnt, this._count(i+1));
+        --this.edge_unselected[a];
+        --this.edge_unselected[b];
     }
 
 
@@ -52,8 +86,26 @@ Graph.prototype._count = function(i) {
     // 輪を作らないようにする
     flag = flag && (a != d && b != c);
 
+    if(a == this.start || a == this.goal) {
+        // スタートとゴールからは枝が一本しか出ない
+        flag = flag && this.edge_selected[a] != 1;
+    } else {
+        // それ以外の点では入る枝と出る枝が必要
+        flag = flag && (this.edge_selected[a] != 0 || this.edge_unselected[a] != this.edge_count[a] - 1);
+    }
+
+    if(b == this.start || b == this.goal) {
+        // スタートとゴールからは枝が一本しか出ない
+        flag = flag && this.edge_selected[b] != 1;
+    } else {
+        // それ以外の点では入る枝と出る枝が必要
+        flag = flag && (this.edge_selected[b] != 0 || this.edge_unselected[b] != this.edge_count[b] - 1);
+    }
+
     // 枝iを使う
     if(flag) {
+        ++this.edge_selected[a];
+        ++this.edge_selected[b];
         mate[a] = 0;
         mate[b] = 0;
         mate[c] = d;
@@ -63,6 +115,8 @@ Graph.prototype._count = function(i) {
         mate[b] = d;
         mate[c] = a;
         mate[d] = b;
+        --this.edge_selected[a];
+        --this.edge_selected[b];
     }
 
     return cnt;
@@ -84,6 +138,7 @@ Graph.prototype.isgoal = function() {
         return false;
     }
 
+    // スタートとゴール以外のパスが無いことを確認
     for(i = 1; i < length; ++i) {
         if(mate[i] == 0 || i == start || i == goal) {
             continue;
