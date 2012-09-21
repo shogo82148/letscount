@@ -1,3 +1,4 @@
+var isWebWorker = typeof require === 'undefined';
 
 function Graph(edges, start, goal) {
     var i, length;
@@ -259,8 +260,17 @@ function grid(w, h) {
     }
 }
 
-if(typeof console !== 'undefined') (function() {
-    edge = grid(11, 11);
+if(isWebWorker) {
+    addEventListener('message', function(e) {
+        var edge = grid(e.data.rows, e.data.cols);
+        var g = new Graph(edge, 1, 1);
+        g.goal = g.node_count;
+        postMessage({
+            count: g.count()
+        });
+    }, false);
+} else (function() {
+    var edge = grid(11, 11);
     var g = new Graph(edge, 1, 1);
     g.goal = g.node_count;
     console.log(g.count());

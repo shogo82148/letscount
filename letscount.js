@@ -23,7 +23,8 @@ $(function() {
         $('#problem-text').text(rows + '×'+  cols);
 
         // 新しいワーカーを作成・初期化
-        worker = new Worker('count.js?' + Math.random());
+        var workerjs = $('#tell').is(':checked') ? 'simpath.js' : 'count.js';
+        worker = new Worker(workerjs + '?' + Math.random());
         worker.addEventListener('message', onMessage, false);
         worker.postMessage({rows: rows, cols: cols});
 
