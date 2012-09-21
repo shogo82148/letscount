@@ -198,6 +198,12 @@ Graph.prototype.frontier = function() {
         if(edge_selected[i] == 0 && edge_unselected[i] == 0) {
             continue;
         }
+        if(edge_selected[i] == 2) {
+            continue;
+        }
+        if(edge_selected[i] == 0 && edge_selected[i] + edge_unselected[i] == edge_count[i] - 1) {
+            continue;
+        }
         if(edge_selected[i] + edge_unselected[i] == edge_count[i]) {
             continue;
         }
@@ -294,6 +300,15 @@ if(isWebWorker) {
             });
             lastShowTime = now;
         };
+        if(e.data.rows<=3 && e.data.cols<=3) {
+            PERIOD_SHOW = 0;
+            SLEEP_TIME = 500;
+            COUNT_PERIOD_SHOW = 1;
+        } else if(e.data.rows<=4 && e.data.cols<=4) {
+            PERIOD_SHOW = 0;
+            SLEEP_TIME = 10;
+            COUNT_PERIOD_SHOW = 1;
+        }
 
         var startTime = nowimpl ? Date.now() : +new Date();
         var edge = grid(e.data.cols, e.data.rows);
