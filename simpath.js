@@ -33,6 +33,8 @@ function Graph(edges, start, goal) {
     this.edge_count = edge_count;
     this.edge_selected = edge_selected;
     this.edge_unselected = edge_unselected;
+
+    this.cache = {};
 }
 
 Graph.prototype._count = function(i) {
@@ -44,6 +46,19 @@ Graph.prototype._count = function(i) {
     var flag;
     var cnt = [0];
     var mate = this.mate;
+    var j, f;
+    var key = [i];
+
+    // 計算済みの結果を探す
+    f = this.frontier();
+    for(j = 0; j < f.length; ++j) {
+        key.push(f[j], mate[f[j]]);
+    }
+    key = key.join(',');
+    if(this.cache[key]) {
+        return this.cache[key];
+    }
+
     var edge = this.edges[i];
     var a = edge[0], b = edge[1];
     var c = mate[a], d = mate[b];
@@ -119,6 +134,8 @@ Graph.prototype._count = function(i) {
         --this.edge_selected[b];
     }
 
+    this.cache[key] = cnt;
+
     return cnt;
 };
 
@@ -149,6 +166,26 @@ Graph.prototype.isgoal = function() {
     }
 
     return true;
+};
+
+Graph.prototype.frontier = function() {
+    var f = [];
+    var i;
+    var edge_count = this.edge_count;
+    var edge_selected = this.edge_selected;
+    var edge_unselected = this.edge_unselected;
+    var length = edge_count.length;
+    //console.log(edge_selected, edge_unselected, edge_count, length);
+    for(i = 1; i < length; ++i) {
+        if(edge_selected[i] == 0 && edge_unselected[i] == 0) {
+            continue;
+        }
+        if(edge_selected[i] + edge_unselected[i] == edge_count[i]) {
+            continue;
+        }
+        f.push(i);
+    }
+    return f;
 };
 
 // 足し算を行う
