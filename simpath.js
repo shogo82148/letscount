@@ -1,3 +1,7 @@
+var PERIOD_SHOW = 50;
+var COUNT_PERIOD_SHOW = 31;
+var SLEEP_TIME = 0;
+var nowimpl = !!Date.now;
 var isWebWorker = typeof require === 'undefined';
 
 function Graph(edges, start, goal) {
@@ -37,6 +41,7 @@ function Graph(edges, start, goal) {
 
     this.selected = [];
     this.cache = {};
+    this.countSummary = [0]; // 検索パスの概算
 }
 
 Graph.prototype._count = function(i) {
@@ -46,7 +51,7 @@ Graph.prototype._count = function(i) {
     }
 
     var flag;
-    var cnt = [0];
+    var cnt;
     var mate = this.mate;
     var j, f;
     var key = [i];
@@ -57,10 +62,14 @@ Graph.prototype._count = function(i) {
         key.push(f[j], mate[f[j]]);
     }
     key = key.join(',');
-    if(this.cache[key]) {
-        return this.cache[key];
+    cnt = this.cache[key];
+    if(cnt) {
+        this.countSummary = add(this.countSummary, cnt);
+        showPath();
+        return cnt;
     }
 
+    cnt = [0];
     var edge = this.edges[i];
     var a = edge[0], b = edge[1];
     var c = mate[a], d = mate[b];
@@ -260,16 +269,44 @@ function grid(w, h) {
     }
 }
 
+var showPath;
+
 if(isWebWorker) {
     addEventListener('message', function(e) {
-        var edge = grid(e.data.rows, e.data.cols);
+        var lastShowTime = 0;
+        showPath = function() {
+            // 時間計測
+            var now = nowimpl ? Date.now() : +new Date();
+            if(now - lastShowTime < PERIOD_SHOW) return;
+            lastShowTime = now;
+
+            // ウエイトを挿入
+            while(now - lastShowTime < SLEEP_TIME) {
+                now = nowimpl ? Date.now() : +new Date();
+            }
+
+            // 経路表示
+            postMessage({
+                edges: edge,
+                selected: g.selected,
+                frontier: g.frontier(),
+                count: g.countSummary
+            });
+            lastShowTime = now;
+        };
+
+        var startTime = nowimpl ? Date.now() : +new Date();
+        var edge = grid(e.data.cols, e.data.rows);
         var g = new Graph(edge, 1, 1);
         g.goal = g.node_count;
         postMessage({
-            count: g.count()
+            count: g.count(),
+            time: (nowimpl ? Date.now() : +new Date()) - startTime
         });
     }, false);
 } else (function() {
+    showPath = function() {
+    };
     var edge = grid(11, 11);
     var g = new Graph(edge, 1, 1);
     g.goal = g.node_count;
