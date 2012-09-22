@@ -127,16 +127,21 @@ $(function() {
     }
 
     function resize() {
+        var parent = $('#patterns');
+        var size = Math.min(parent.width(), parent.height()) * 0.8;
         var canvas = $('#path');
-        var pos = canvas.offset();
-        var scale = canvas.width() / canvas.attr('width');
+        var pos = parent.offset();
+        canvas.width(size);
+        var scale = size / canvas.attr('width');
+        var top = pos.top + parent.height() * 0.1;
+        var left = pos.left + (parent.width() - size) / 2;
         $('#start').css({
-            top: pos.top + margin * scale,
-            left: pos.left + margin * scale
+            top: top + margin * scale,
+            left: left + margin * scale
         });
         $('#goal').css({
-            top: pos.top + canvas.height() - margin * scale,
-            left: pos.left + canvas.width() - margin * scale
+            top: top + canvas.height() - margin * scale,
+            left: left + canvas.width() - margin * scale
         });
     }
 
