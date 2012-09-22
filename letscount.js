@@ -24,7 +24,11 @@ $(function() {
 
         // 新しいワーカーを作成・初期化
         var workerjs = $('#tell').is(':checked') ? 'simpath.js' : 'count.js';
-        worker = new Worker(workerjs + '?' + Math.random());
+        if(location.hostname == "localhost") {
+            worker = new Worker(workerjs + '?' + Math.random());
+        } else {
+            worker = new Worker(workerjs);
+        }
         worker.addEventListener('message', onMessage, false);
         worker.postMessage({rows: rows, cols: cols});
 
