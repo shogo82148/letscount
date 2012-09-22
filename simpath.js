@@ -1,5 +1,5 @@
 var PERIOD_SHOW = 50;
-var COUNT_PERIOD_SHOW = 31;
+var COUNT_PERIOD_SHOW = 10;
 var SLEEP_TIME = 0;
 var nowimpl = !!Date.now;
 var isWebWorker = typeof require === 'undefined';
@@ -54,19 +54,23 @@ Graph.prototype._count = function(i) {
     var cnt;
     var mate = this.mate;
     var j, f;
-    var key = [i];
+    var key = null;
 
-    // 計算済みの結果を探す
-    f = this.frontier();
-    for(j = 0; j < f.length; ++j) {
-        key.push(f[j], mate[f[j]]);
-    }
-    key = key.join(',');
-    cnt = this.cache[key];
-    if(cnt) {
-        this.countSummary = add(this.countSummary, cnt);
-        showPath();
-        return cnt;
+    if(i % COUNT_PERIOD_SHOW == 0) {
+        key = [i];
+
+        // 計算済みの結果を探す
+        f = this.frontier();
+        for(j = 0; j < f.length; ++j) {
+            key.push(f[j], mate[f[j]]);
+        }
+        key = String.fromCharCode.apply(null, key);
+        cnt = this.cache[key];
+        if(cnt) {
+            this.countSummary = add(this.countSummary, cnt);
+            showPath();
+            return cnt;
+        }
     }
 
     cnt = [0];
@@ -152,7 +156,9 @@ Graph.prototype._count = function(i) {
         --this.edge_selected[b];
     }
 
-    this.cache[key] = cnt;
+    if(key) {
+        this.cache[key] = cnt;
+    }
 
     return cnt;
 };
@@ -308,6 +314,8 @@ if(isWebWorker) {
             PERIOD_SHOW = 0;
             SLEEP_TIME = 10;
             COUNT_PERIOD_SHOW = 1;
+        } else {
+            COUNT_PERIOD_SHOW = e.data.rows;
         }
 
         var startTime = nowimpl ? Date.now() : +new Date();
@@ -322,7 +330,7 @@ if(isWebWorker) {
 } else (function() {
     showPath = function() {
     };
-    var edge = grid(11, 11);
+    var edge = grid(10, 10);
     var g = new Graph(edge, 1, 1);
     g.goal = g.node_count;
     console.log(g.count());
