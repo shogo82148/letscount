@@ -23,7 +23,8 @@ $(function() {
         $('#problem-text').text(rows + '×'+  cols);
 
         // 新しいワーカーを作成・初期化
-        worker = new Worker('count.js?' + Math.random());
+        var workerjs = $('#tell').is(':checked') ? 'simpath.js' : 'count.js';
+        worker = new Worker(workerjs + '?' + Math.random());
         worker.addEventListener('message', onMessage, false);
         worker.postMessage({rows: rows, cols: cols});
 
@@ -38,7 +39,14 @@ $(function() {
         // パス表示
         function onMessage(e) {
             var data = e.data;
+            if(data.selected) ctx.strokeStyle = 'gray';
+            else ctx.strokeStyle = 'black';
             drawAllPath();
+
+            if(data.selected) {
+                drawEdges(data.edges, data.selected, data.frontier);
+            }
+
             if(data.path) {
                 drawPath(data.path);
             }
@@ -57,7 +65,6 @@ $(function() {
             ctx.beginPath();
             ctx.clearRect(0, 0, width, height);
             ctx.lineWidth = 3;
-            ctx.strokeStyle = 'black';
 
             //横線
             for(i=0;i<=rows;i++) {
@@ -114,6 +121,49 @@ $(function() {
                     return '00' + count;
                 }
                 return '000' + count;
+            }
+        }
+
+        // 枝の描画
+        function drawEdges(edges, selected, frontier) {
+            ctx.strokeStyle = 'black';
+            draw(false);
+            ctx.lineWidth = 7;
+            ctx.strokeStyle = '#d24e63';
+            draw(true);
+            ctx.fillStyle = 'black';
+            drawFrontier();
+
+            function draw(flag) {
+                var i, length = selected.length;
+                var p1, p2;
+                ctx.beginPath();
+                for(i = 0; i < length; ++i) {
+                    if(!(flag && selected[i] || !flag && !selected[i]))
+                        continue;
+                    p1 = no2Screen(edges[i][0]);
+                    p2 = no2Screen(edges[i][1]);
+                    ctx.moveTo(p1.x, p1.y);
+                    ctx.lineTo(p2.x, p2.y);
+                }
+                ctx.stroke();
+            }
+
+            function drawFrontier() {
+                var i, length = frontier.length;
+                var p;
+                ctx.beginPath();
+                for(i = 0; i < length; ++i) {
+                    p = no2Screen(frontier[i]);
+                    ctx.arc(p.x, p.y, 5, 0, Math.PI*2, false);
+                }
+                ctx.fill();
+            }
+
+            function no2Screen(no) {
+                var x = (no - 1) % (cols + 1);
+                var y = (no - 1) / (cols + 1);
+                return toScreen(x, y|0);
             }
         }
 
