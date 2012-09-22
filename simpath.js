@@ -19,15 +19,12 @@ function Graph(edges, start, goal) {
     this.node_count = node_count;
 
     // 各点の情報を初期化
-    var mate = []; // パスの接続情報
-    var edge_count = []; //各点に出入りする枝の数
-    var edge_selected = []; // 選択された枝の数
-    var edge_unselected = []; // 選択されなかった枝の数
+    var mate = new Uint32Array(node_count + 1); // パスの接続情報
+    var edge_count = new Uint8Array(node_count + 1); //各点に出入りする枝の数
+    var edge_selected = new Uint8Array(node_count + 1); // 選択された枝の数
+    var edge_unselected = new Uint8Array(node_count + 1); // 選択されなかった枝の数
     for(i = 0; i <= node_count; ++i) {
-        mate.push(i);
-        edge_count.push(0);
-        edge_selected.push(0);
-        edge_unselected.push(0);
+        mate[i] = i;
     }
     for(i = 0; i < length; ++i) {
         ++edge_count[edges[i][0]];
@@ -46,12 +43,14 @@ function Graph(edges, start, goal) {
 
 Graph.prototype._count = function(i) {
     // すべての枝を処理した
+    var cnt;
     if(i >= this.edges.length) {
-        return this.isgoal() ? [1] : [0];
+        cnt = new Uint16Array(1);
+        if(this.isgoal()) cnt[0] = 1;
+        return cnt;
     }
 
     var flag;
-    var cnt;
     var mate = this.mate;
     var j, f;
     var key = null;
@@ -73,7 +72,7 @@ Graph.prototype._count = function(i) {
         }
     }
 
-    cnt = [0];
+    cnt = new Uint16Array(1);
     var edge = this.edges[i];
     var a = edge[0], b = edge[1];
     var c = mate[a], d = mate[b];
@@ -234,19 +233,32 @@ function cmp(a, b) {
 
 // 足し算を行う
 function add(a, b) {
+    var alength = a.length;
+    var blength = b.length;
+    var length = Math.max(alength, blength);
+    var ans = new Uint16Array(length);
+    var new_ans;
     var i;
     var carry = 0;
-    var ans = [0];
-    var length = Math.max(a.length, b.length);
 
-    for(i = 0; i < length || carry != 0; ++i) {
-        ans[i] = (a[i]||0) + (b[i]||0) + carry;
+
+    for(i = 0; i < length; ++i) {
+        ans[i] = (i < alength ? a[i] : 0) + (i < blength ? b[i] : 0) + carry;
         if(ans[i]>=10000) {
             carry = 1;
             ans[i] -= 10000;
         } else {
             carry = 0;
         }
+    }
+
+    if(carry !== 0) {
+        new_ans = new Uint16Array(length + 1);
+        for(i = 0; i < length; ++i) {
+            new_ans[i] = ans[i];
+        }
+        new_ans[length] = 1;
+        return new_ans;
     }
 
     return ans;
@@ -330,7 +342,7 @@ if(isWebWorker) {
 } else (function() {
     showPath = function() {
     };
-    var edge = grid(10, 10);
+    var edge = grid(9, 9);
     var g = new Graph(edge, 1, 1);
     g.goal = g.node_count;
     console.log(g.count());
