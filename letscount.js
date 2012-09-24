@@ -156,12 +156,12 @@ $(function() {
             function drawFrontier() {
                 var i, length = frontier.length;
                 var p;
-                ctx.beginPath();
                 for(i = 0; i < length; ++i) {
+                    ctx.beginPath();
                     p = no2Screen(frontier[i]);
                     ctx.arc(p.x, p.y, 5, 0, Math.PI*2, false);
+                    ctx.fill();
                 }
-                ctx.fill();
             }
 
             function no2Screen(no) {
