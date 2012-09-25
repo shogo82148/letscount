@@ -16,6 +16,8 @@ $(function() {
         }
         if(rows<=0 || cols<=0) return ;
 
+        $('#tellchildren').hide();
+
         //ピコピコする
         picopico.start();
 
@@ -43,6 +45,7 @@ $(function() {
         // パス表示
         function onMessage(e) {
             var data = e.data;
+            var countKanji;
             if(data.selected) ctx.strokeStyle = 'gray';
             else ctx.strokeStyle = 'black';
             drawAllPath();
@@ -55,9 +58,11 @@ $(function() {
                 drawPath(data.path);
             }
             if(data.count) {
-                showCount(data.count);
+                countKanji = showCount(data.count);
             }
             if(data.time) {
+                if(rows >= 5 || cols >= 5)
+                    share(rows + '×' + cols, countKanji, data.time);
                 picopico.stop();
                 console.log('Time: ' + data.time + 'ms');
             }
@@ -114,6 +119,7 @@ $(function() {
                 s = (count[i+1] ? addzero(count[i]) : count[i]) + (units[i] || '') + s;
             }
             resultText.text(s);
+            return s;
 
             // 0埋めをする
             function addzero(count) {
@@ -197,6 +203,50 @@ $(function() {
             top: top + canvas.height() - margin * scale,
             left: left + canvas.width() - margin * scale
         });
+    }
+
+    function share(size, patterns, time) {
+        var textPattern = [
+            '%sのときは、%dだってよ！%fかかったわ！',
+            'はい、出ました！%sのときは%d通り！%fかかったわ！',
+            'あ、なんかでてるね。%sのときは%d通り。すごいね！%fかかったわ！',
+            'みんな、起きて！%sのときは%d通り。ものすごい数になってきたね。%fかかったわ！',
+            '%sのときは、なんと！%d通り！めまいがしてきたわね！%fかかったわ！',
+            'ツイニデタワ。%sノトキハ%d通り！皆ノ子孫ニ連絡シナキャ！%fカカッタワ！'
+        ];
+        var text = textPattern[Math.random()*textPattern.length|0];
+        var hashtags = ['おねえさんのコンピュータ'];
+        text = text.replace('%s', size);
+        text = text.replace('%d', patterns);
+        text = text.replace('%f', time/1000 + '秒');
+
+        // $.browserは非推奨らしいけど、簡易判定で十分なのでとりあえずこれで
+        if($.browser) {
+            if($.browser.msis) {
+                hashtags.push('ie');
+            } else if($.browser.mozilla) {
+                hashtags.push('firefox');
+            } else if($.browser.webkit) {
+                if(navigator.userAgent.toLowerCase().indexOf('chrome')>=0) {
+                    hashtags.push('chrome');
+                } else {
+                    hashtags.push('safari');
+                }
+            } else if($.browser.opera) {
+                hashtags.push('opera');
+            }
+        }
+
+        if($('#tell').is(':checked')) hashtags.push('おしえてあげるモード');
+        else hashtags.push('通常モード');
+
+        var shareurl = 'https://twitter.com/share?' +
+                'lang=ja&hashtags=' + encodeURIComponent(hashtags.join(',')) +
+                '&url=' + encodeURIComponent('http://shogo82148.github.com/letscount/') +
+                '&text=' + encodeURIComponent(text);
+        $('#tellchildren').attr('href', shareurl)
+            .attr('title', text)
+            .show();
     }
 
     // ピコピコする
