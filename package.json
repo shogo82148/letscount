@@ -5,6 +5,7 @@
   "main": "letscount.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "format": "prettier --write **/*.ts",
     "build": "tsc"
   },
   "repository": {
@@ -18,6 +19,7 @@
   },
   "homepage": "https://github.com/shogo82148/letscount#readme",
   "devDependencies": {
+    "prettier": "^2.4.1",
     "typescript": "^4.4.3"
   }
 }

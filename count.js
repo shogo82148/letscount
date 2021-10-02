@@ -2,7 +2,7 @@ var PERIOD_SHOW = 50;
 var COUNT_PERIOD_SHOW = 31;
 var SLEEP_TIME = 0;
 var nowimpl = !!Date.now;
-addEventListener('message', onMessage, false);
+addEventListener("message", onMessage, false);
 function onMessage(e) {
     var data = e.data;
     countRoute(data.rows, data.cols);
@@ -37,7 +37,7 @@ function countRoute(rows, cols) {
     // 結果出力
     postMessage({
         count: count,
-        time: (nowimpl ? Date.now() : +new Date()) - startTime
+        time: (nowimpl ? Date.now() : +new Date()) - startTime,
     });
     function search(x, y) {
         //ゴール！
@@ -96,7 +96,7 @@ function showPath(path) {
     // 経路表示
     postMessage({
         path: path,
-        count: count
+        count: count,
     });
     lastShowTime = now;
 }

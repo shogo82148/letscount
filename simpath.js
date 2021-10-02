@@ -2,7 +2,7 @@ var PERIOD_SHOW = 50;
 var COUNT_PERIOD_SHOW = 10;
 var SLEEP_TIME = 0;
 var nowimpl = !!Date.now;
-var isWebWorker = typeof require === 'undefined';
+var isWebWorker = typeof require === "undefined";
 function Graph(edges, start, goal) {
     var i, length;
     this.edges = edges; // グラフの枝情報
@@ -98,9 +98,9 @@ Graph.prototype._count = function (i) {
     //枝刈り
     flag = true;
     // 枝の両端はパスの途中であってはならない
-    flag = flag && (c != 0 && d != 0);
+    flag = flag && c != 0 && d != 0;
     // 輪を作らないようにする
-    flag = flag && (a != d && b != c);
+    flag = flag && a != d && b != c;
     // 三叉路を作らない
     flag = flag && this.edge_selected[a] < 2 && this.edge_selected[b] < 2;
     if (a == this.start || a == this.goal) {
@@ -262,7 +262,7 @@ function grid(w, h) {
 }
 var showPath;
 if (isWebWorker) {
-    addEventListener('message', function (e) {
+    addEventListener("message", function (e) {
         var lastShowTime = 0;
         showPath = function () {
             // 時間計測
@@ -279,7 +279,7 @@ if (isWebWorker) {
                 edges: edge,
                 selected: g.selected,
                 frontier: g.frontier(),
-                count: g.countSummary
+                count: g.countSummary,
             });
             lastShowTime = now;
         };
@@ -302,14 +302,13 @@ if (isWebWorker) {
         g.goal = g.node_count;
         postMessage({
             count: g.count(),
-            time: (nowimpl ? Date.now() : +new Date()) - startTime
+            time: (nowimpl ? Date.now() : +new Date()) - startTime,
         });
     }, false);
 }
 else
     (function () {
-        showPath = function () {
-        };
+        showPath = function () { };
         var edge = grid(9, 9);
         var g = new Graph(edge, 1, 1);
         g.goal = g.node_count;

@@ -1,9 +1,9 @@
 $(function () {
-    var canvas = $('#path');
-    var width = canvas.attr('width') * 1;
-    var height = canvas.attr('height') * 1;
+    var canvas = $("#path");
+    var width = canvas.attr("width") * 1;
+    var height = canvas.attr("height") * 1;
     var margin = 10;
-    var ctx = canvas[0].getContext('2d');
+    var ctx = canvas[0].getContext("2d");
     var worker;
     function start(rows, cols) {
         // 古いワーカーは用済み
@@ -14,35 +14,54 @@ $(function () {
         }
         if (rows <= 0 || cols <= 0)
             return;
-        $('#tellchildren').hide();
+        $("#tellchildren").hide();
         //ピコピコする
         picopico.start();
         // 画面更新
-        $('#problem-text').text(rows + '×' + cols);
+        $("#problem-text").text(rows + "×" + cols);
         // 新しいワーカーを作成・初期化
-        var workerjs = $('#tell').is(':checked') ? 'simpath.js' : 'count.js';
+        var workerjs = $("#tell").is(":checked") ? "simpath.js" : "count.js";
         if (location.hostname == "localhost") {
-            worker = new Worker(workerjs + '?' + Math.random());
+            worker = new Worker(workerjs + "?" + Math.random());
         }
         else {
             worker = new Worker(workerjs);
         }
-        worker.addEventListener('message', onMessage, false);
+        worker.addEventListener("message", onMessage, false);
         worker.postMessage({ rows: rows, cols: cols });
         var xstep = (width - 2 * margin) / cols;
         var ystep = (height - 2 * margin) / rows;
-        var resultText = $('#result-text');
-        var units = ['', '万', '億', '兆', '京', '垓', '𥝱', '穣', '溝', '澗', '正', '載', '極', '恒河沙', '阿僧祇', '那由他', '不可思議', '無量大数']; // 大きな数の単位
+        var resultText = $("#result-text");
+        var units = [
+            "",
+            "万",
+            "億",
+            "兆",
+            "京",
+            "垓",
+            "𥝱",
+            "穣",
+            "溝",
+            "澗",
+            "正",
+            "載",
+            "極",
+            "恒河沙",
+            "阿僧祇",
+            "那由他",
+            "不可思議",
+            "無量大数",
+        ]; // 大きな数の単位
         drawAllPath();
-        $('#start, #goal').show();
+        $("#start, #goal").show();
         // パス表示
         function onMessage(e) {
             var data = e.data;
             var countKanji;
             if (data.selected)
-                ctx.strokeStyle = 'gray';
+                ctx.strokeStyle = "gray";
             else
-                ctx.strokeStyle = 'black';
+                ctx.strokeStyle = "black";
             drawAllPath();
             if (data.selected) {
                 drawEdges(data.edges, data.selected, data.frontier);
@@ -55,9 +74,9 @@ $(function () {
             }
             if (data.time) {
                 if (rows >= 5 || cols >= 5)
-                    share(rows + '×' + cols, countKanji, data.time);
+                    share(rows + "×" + cols, countKanji, data.time);
                 picopico.stop();
-                console.log('Time: ' + data.time + 'ms');
+                console.log("Time: " + data.time + "ms");
             }
         }
         // 描画
@@ -85,7 +104,7 @@ $(function () {
         // パスの描画
         function drawPath(path) {
             ctx.lineWidth = 7;
-            ctx.strokeStyle = '#d24e63';
+            ctx.strokeStyle = "#d24e63";
             ctx.beginPath();
             var i, p;
             p = toScreen(path[0], path[1]);
@@ -101,9 +120,9 @@ $(function () {
         }
         // 経路数の表示
         function showCount(count) {
-            var s = '', i;
+            var s = "", i;
             for (i = 0; i < count.length; i++) {
-                s = (count[i + 1] ? addzero(count[i]) : count[i]) + (units[i] || '') + s;
+                s = (count[i + 1] ? addzero(count[i]) : count[i]) + (units[i] || "") + s;
             }
             resultText.text(s);
             return s;
@@ -113,29 +132,29 @@ $(function () {
                     return count;
                 }
                 else if (count >= 100) {
-                    return '0' + count;
+                    return "0" + count;
                 }
                 else if (count >= 10) {
-                    return '00' + count;
+                    return "00" + count;
                 }
-                return '000' + count;
+                return "000" + count;
             }
         }
         // 枝の描画
         function drawEdges(edges, selected, frontier) {
-            ctx.strokeStyle = 'black';
+            ctx.strokeStyle = "black";
             draw(false);
             ctx.lineWidth = 7;
-            ctx.strokeStyle = '#d24e63';
+            ctx.strokeStyle = "#d24e63";
             draw(true);
-            ctx.fillStyle = 'black';
+            ctx.fillStyle = "black";
             drawFrontier();
             function draw(flag) {
                 var i, length = selected.length;
                 var p1, p2;
                 ctx.beginPath();
                 for (i = 0; i < length; ++i) {
-                    if (!(flag && selected[i] || !flag && !selected[i]))
+                    if (!((flag && selected[i]) || (!flag && !selected[i])))
                         continue;
                     p1 = no2Screen(edges[i][0]);
                     p2 = no2Screen(edges[i][1]);
@@ -164,73 +183,74 @@ $(function () {
         function toScreen(x, y) {
             return {
                 x: x * xstep + margin,
-                y: y * ystep + margin
+                y: y * ystep + margin,
             };
         }
     }
     function resize() {
-        var parent = $('#patterns');
+        var parent = $("#patterns");
         var size = Math.min(parent.width(), parent.height()) * 0.8;
-        var canvas = $('#path');
+        var canvas = $("#path");
         var pos = parent.offset();
         canvas.width(size);
-        var scale = size / canvas.attr('width');
+        var scale = size / canvas.attr("width");
         var top = pos.top + parent.height() * 0.1;
         var left = pos.left + (parent.width() - size) / 2;
-        $('#start').css({
+        $("#start").css({
             top: top + margin * scale,
-            left: left + margin * scale
+            left: left + margin * scale,
         });
-        $('#goal').css({
+        $("#goal").css({
             top: top + canvas.height() - margin * scale,
-            left: left + canvas.width() - margin * scale
+            left: left + canvas.width() - margin * scale,
         });
     }
     function share(size, patterns, time) {
         var textPattern = [
-            '%sのときは、%dだってよ！%fかかったわ！',
-            'はい、出ました！%sのときは%d通り！%fかかったわ！',
-            'あ、なんかでてるね。%sのときは%d通り。すごいね！%fかかったわ！',
-            'みんな、起きて！%sのときは%d通り。ものすごい数になってきたね。%fかかったわ！',
-            '%sのときは、なんと！%d通り！めまいがしてきたわね！%fかかったわ！',
-            'ツイニデタワ。%sノトキハ%d通り！皆ノ子孫ニ連絡シナキャ！%fカカッタワ！'
+            "%sのときは、%dだってよ！%fかかったわ！",
+            "はい、出ました！%sのときは%d通り！%fかかったわ！",
+            "あ、なんかでてるね。%sのときは%d通り。すごいね！%fかかったわ！",
+            "みんな、起きて！%sのときは%d通り。ものすごい数になってきたね。%fかかったわ！",
+            "%sのときは、なんと！%d通り！めまいがしてきたわね！%fかかったわ！",
+            "ツイニデタワ。%sノトキハ%d通り！皆ノ子孫ニ連絡シナキャ！%fカカッタワ！",
         ];
-        var text = textPattern[Math.random() * textPattern.length | 0];
-        var hashtags = ['おねえさんのコンピュータ'];
-        text = text.replace('%s', size);
-        text = text.replace('%d', patterns);
-        text = text.replace('%f', time / 1000 + '秒');
+        var text = textPattern[(Math.random() * textPattern.length) | 0];
+        var hashtags = ["おねえさんのコンピュータ"];
+        text = text.replace("%s", size);
+        text = text.replace("%d", patterns);
+        text = text.replace("%f", time / 1000 + "秒");
         // $.browserは非推奨らしいけど、簡易判定で十分なのでとりあえずこれで
         if ($.browser) {
             if ($.browser.msis) {
-                hashtags.push('ie');
+                hashtags.push("ie");
             }
             else if ($.browser.mozilla) {
-                hashtags.push('firefox');
+                hashtags.push("firefox");
             }
             else if ($.browser.webkit) {
-                if (navigator.userAgent.toLowerCase().indexOf('chrome') >= 0) {
-                    hashtags.push('chrome');
+                if (navigator.userAgent.toLowerCase().indexOf("chrome") >= 0) {
+                    hashtags.push("chrome");
                 }
                 else {
-                    hashtags.push('safari');
+                    hashtags.push("safari");
                 }
             }
             else if ($.browser.opera) {
-                hashtags.push('opera');
+                hashtags.push("opera");
             }
         }
-        if ($('#tell').is(':checked'))
-            hashtags.push('おしえてあげるモード');
+        if ($("#tell").is(":checked"))
+            hashtags.push("おしえてあげるモード");
         else
-            hashtags.push('通常モード');
-        var shareurl = 'https://twitter.com/share?' +
-            'lang=ja&hashtags=' + encodeURIComponent(hashtags.join(',')) +
-            '&url=' + encodeURIComponent('http://shogo82148.github.com/letscount/') +
-            '&text=' + encodeURIComponent(text);
-        $('#tellchildren').attr('href', shareurl)
-            .attr('title', text)
-            .show();
+            hashtags.push("通常モード");
+        var shareurl = "https://twitter.com/share?" +
+            "lang=ja&hashtags=" +
+            encodeURIComponent(hashtags.join(",")) +
+            "&url=" +
+            encodeURIComponent("http://shogo82148.github.com/letscount/") +
+            "&text=" +
+            encodeURIComponent(text);
+        $("#tellchildren").attr("href", shareurl).attr("title", text).show();
     }
     // ピコピコする
     function PicoPico() {
@@ -264,9 +284,9 @@ $(function () {
         // 波形データ作成
         var i, j, offset = 0, x = 0;
         var step;
-        var volume = ($('#volume').val() || 100) / 100;
+        var volume = ($("#volume").val() || 100) / 100;
         for (i = 0; i < freqs.length; i++) {
-            step = 2 * Math.PI * freqs[i] / this.SAMPLE_RATE;
+            step = (2 * Math.PI * freqs[i]) / this.SAMPLE_RATE;
             for (j = 0; j < notelength; j++) {
                 data[offset] = Math.sin(x) * volume;
                 ++offset;
@@ -312,8 +332,8 @@ $(function () {
     var picopico = new PicoPico();
     $(window).resize(resize);
     resize();
-    $('input[type=button]').click(function () {
-        start($(this).attr('rows') * 1, $(this).attr('cols') * 1);
+    $("input[type=button]").click(function () {
+        start($(this).attr("rows") * 1, $(this).attr("cols") * 1);
     });
 });
 //# sourceMappingURL=letscount.js.map
