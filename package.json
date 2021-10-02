@@ -1,0 +1,23 @@
+{
+  "name": "letscount",
+  "version": "1.0.0",
+  "description": "「それでもね。私はみんなに「組み合わせ爆発のすごさ」を教えたいの！止めないで！」",
+  "main": "letscount.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/shogo82148/letscount.git"
+  },
+  "author": "Ichinose Shogo",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/shogo82148/letscount/issues"
+  },
+  "homepage": "https://github.com/shogo82148/letscount#readme",
+  "devDependencies": {
+    "typescript": "^4.4.3"
+  }
+}
