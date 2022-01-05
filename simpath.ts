@@ -360,7 +360,9 @@ if (isWebWorker) {
     false
   );
 } else {
-  var edge = grid(4, 4);
+  let cols = parseInt(process.argv[2] || "9");
+  let rows = parseInt(process.argv[3] || "9");
+  var edge = grid(cols, rows);
   var g = new Graph(edge, 1, 1);
   g.goal = g.node_count;
   console.log(g.count(0));
