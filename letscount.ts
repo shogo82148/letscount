@@ -1,10 +1,10 @@
 document.addEventListener("DOMContentLoaded", () => {
-  var canvas = $<HTMLCanvasElement>("#path");
-  var width = parseFloat(canvas.attr("width") || "0");
-  var height = parseFloat(canvas.attr("height") || "0");
-  var margin = 10;
-  var ctx = canvas[0].getContext("2d")!;
-  var worker: Worker;
+  const canvas = document.getElementById("path") as HTMLCanvasElement;
+  const width = canvas.width;
+  const height = canvas.height;
+  const margin = 10;
+  const ctx = canvas.getContext("2d")!;
+  let worker: Worker;
 
   function start(rows: number, cols: number) {
     // 古いワーカーは用済み
@@ -128,13 +128,13 @@ document.addEventListener("DOMContentLoaded", () => {
       var s = "",
         i;
       for (i = 0; i < count.length; i++) {
-        s = (count[i + 1] ? addzero(count[i]) : count[i]) + (units[i] || "") + s;
+        s = (count[i + 1] ? fillZero(count[i]) : count[i]) + (units[i] || "") + s;
       }
       resultText.text(s);
       return s;
 
       // 0埋めをする
-      function addzero(count: number): string {
+      function fillZero(count: number): string {
         if (count >= 1000) {
           return `${count}`;
         } else if (count >= 100) {
@@ -200,22 +200,22 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function resize() {
-    var parent = $<HTMLDivElement>("#patterns");
-    var size = Math.min(parent.width() ?? 0, parent.height() ?? 0) * 0.8;
-    var canvas = $<HTMLCanvasElement>("#path");
-    var pos = parent.offset();
-    canvas.width(size);
-    var scale = size / parseFloat(canvas.attr("width") ?? "1");
-    var top = (pos?.top ?? 0) + (parent.height() ?? 0) * 0.1;
-    var left = (pos?.left ?? 0) + ((parent.width() ?? 0) - size) / 2;
-    $("#start").css({
-      top: top + margin * scale,
-      left: left + margin * scale,
-    });
-    $("#goal").css({
-      top: top + (canvas?.height() ?? 0) - margin * scale,
-      left: left + (canvas?.width() ?? 0) - margin * scale,
-    });
+    const parent = document.getElementById("patterns") as HTMLDivElement;
+    const size = Math.min(parent.clientWidth, parent.clientHeight) * 0.8;
+    canvas.style.width = `${size}px`;
+    const scale = size / width;
+    const top = parent.offsetTop + parent.clientHeight * 0.1;
+    const left = parent.offsetLeft + (parent.clientWidth - size) / 2;
+    const startLabel = document.getElementById("start");
+    if (startLabel) {
+      startLabel.style.top = `${top + margin * scale}px`;
+      startLabel.style.left = `${left + margin * scale}px`;
+    }
+    const goalLabel = document.getElementById("goal");
+    if (goalLabel) {
+      goalLabel.style.top = `${top + size - margin * scale}px`;
+      goalLabel.style.left = `${left + size - margin * scale}px`;
+    }
   }
 
   function share(size: string, patterns: string, time: number) {
@@ -227,7 +227,7 @@ document.addEventListener("DOMContentLoaded", () => {
       "%sのときは、なんと！%d通り！めまいがしてきたわね！%fかかったわ！",
       "ツイニデタワ。%sノトキハ%d通り！皆ノ子孫ニ連絡シナキャ！%fカカッタワ！",
     ];
-    var text = textPattern[(Math.random() * textPattern.length) | 0];
+    var text = textPattern[Math.floor(Math.random() * textPattern.length)];
     var hashtags = ["おねえさんのコンピュータ"];
     text = text.replace("%s", size);
     text = text.replace("%d", patterns);
@@ -265,7 +265,7 @@ document.addEventListener("DOMContentLoaded", () => {
     $("#tellchildren").attr("href", shareurl).attr("title", text).show();
   }
 
-  $(window).resize(resize);
+  window.addEventListener("resize", resize);
   resize();
 
   $("input[type=button]").click(function () {
