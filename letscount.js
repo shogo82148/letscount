@@ -242,7 +242,7 @@ $(function() {
 
         var shareurl = 'https://twitter.com/share?' +
                 'lang=ja&hashtags=' + encodeURIComponent(hashtags.join(',')) +
-                '&url=' + encodeURIComponent('http://shogo82148.github.com/letscount/') +
+                '&url=' + encodeURIComponent('http://shogo82148.github.io/letscount/') +
                 '&text=' + encodeURIComponent(text);
         $('#tellchildren').attr('href', shareurl)
             .attr('title', text)
