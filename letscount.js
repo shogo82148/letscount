@@ -1,5 +1,5 @@
 "use strict";
-$(function () {
+document.addEventListener("DOMContentLoaded", () => {
     var canvas = $("#path");
     var width = parseFloat(canvas.attr("width") || "0");
     var height = parseFloat(canvas.attr("height") || "0");
