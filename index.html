@@ -1,75 +1,83 @@
 <!doctype html>
 <html>
-  <head>
-    <meta charset="UTF-8">
-    <link rel="stylesheet" type="text/css" href="letscount.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
-    <script src="letscount.js"></script>
-    <title>おねえさんのコンピュータ</title>
-  </head>
-  <body>
-    <div id="container">
-      <div id="outer-display">
-        <div id="inner-display">
-          <div id="problem">
-            <p class="text-japanese">
-              同じ所を２度通らない道順の数
-            </p>
-            <p class="text-english">
-              Total number of routes that do not pass by the same place twice
-            </p>
-            <p id="problem-text">
-            </p>
-          </div>
-          <div id="patterns">
-            <div id="start">S</div>
-            <div id="goal">G</div>
-            <canvas id="path" width="500" height="500"></canvas>
-          </div>
-          <div id="result">
-            <div id="result-text"></div>
-            <div class="text-japanese">通り</div>
-            <div class="text-english">patterns<br>
-              <a href="#" id="tellchildren">みんなに教えなきゃ！</a>
-            </div>
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" type="text/css" href="letscount.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+  <script src="letscount.js"></script>
+  <title>おねえさんのコンピュータ</title>
+</head>
+
+<body>
+  <div id="container">
+    <div id="outer-display">
+      <div id="inner-display">
+        <div id="problem">
+          <p class="text-japanese">
+            同じ所を２度通らない道順の数
+          </p>
+          <p class="text-english">
+            Total number of routes that do not pass by the same place twice
+          </p>
+          <p id="problem-text">
+          </p>
+        </div>
+        <div id="patterns">
+          <div id="start">S</div>
+          <div id="goal">G</div>
+          <canvas id="path" width="500" height="500"></canvas>
+        </div>
+        <div id="result">
+          <div id="result-text"></div>
+          <div class="text-japanese">通り</div>
+          <div class="text-english">patterns<br>
+            <a href="#" id="tellchildren">みんなに教えなきゃ！</a>
           </div>
         </div>
       </div>
-      <input type="button" value="1×1" rows="1" cols="1">
-      <input type="button" value="2×2" rows="2" cols="2">
-      <input type="button" value="3×3" rows="3" cols="3">
-      <input type="button" value="4×4" rows="4" cols="4">
-      <input type="button" value="5×5" rows="5" cols="5">
-      <input type="button" value="6×6" rows="6" cols="6">
-      <input type="button" value="7×7" rows="7" cols="7">
-      <input type="button" value="8×8" rows="8" cols="8">
-      <input type="button" value="9×9" rows="9" cols="9">
-      <input type="button" value="10×10" rows="10" cols="10">
-      <input type="button" value="11×11" rows="11" cols="11">
-      <input type="button" value="12×12" rows="12" cols="12">
-      <input type="button" value="13×13" rows="13" cols="13">
-      <input type="button" value="14×14" rows="14" cols="14">
-      <input type="button" value="15×15" rows="15" cols="15">
-      <input type="button" value="16×16" rows="16" cols="16">
-      <input type="button" value="stop" rows="-1" cols="-1">
-      <label><input id="tell" type="checkbox">おねえさんに教えてあげる</label>
-      <a href="https://b.hatena.ne.jp/entry/shogo82148.github.io/letscount/" class="hatena-bookmark-button" data-hatena-bookmark-title="おねえさんのコンピュータ" data-hatena-bookmark-layout="standard" title="このエントリーをはてなブックマークに追加"><img src="https://b.st-hatena.com/images/entry-button/button-only.gif" alt="このエントリーをはてなブックマークに追加" width="20" height="20" style="border: none;" /></a><script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8" async="async"></script>
-      <a href="https://twitter.com/share" class="twitter-share-button" data-via="shogo82148" data-lang="ja">ツイート</a>
-      <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
-      <div>元ネタ<a href="http://www.youtube.com/watch?v=Q4gTV4r0zRs">『フカシギの数え方』 おねえさんといっしょ！ みんなで数えてみよう！</a></div>
     </div>
-    <script type="text/javascript">
+    <input type="button" value="1×1" data-rows="1" data-cols="1">
+    <input type="button" value="2×2" data-rows="2" data-cols="2">
+    <input type="button" value="3×3" data-rows="3" data-cols="3">
+    <input type="button" value="4×4" data-rows="4" data-cols="4">
+    <input type="button" value="5×5" data-rows="5" data-cols="5">
+    <input type="button" value="6×6" data-rows="6" data-cols="6">
+    <input type="button" value="7×7" data-rows="7" data-cols="7">
+    <input type="button" value="8×8" data-rows="8" data-cols="8">
+    <input type="button" value="9×9" data-rows="9" data-cols="9">
+    <input type="button" value="10×10" data-rows="10" data-cols="10">
+    <input type="button" value="11×11" data-rows="11" data-cols="11">
+    <input type="button" value="12×12" data-rows="12" data-cols="12">
+    <input type="button" value="13×13" data-rows="13" data-cols="13">
+    <input type="button" value="14×14" data-rows="14" data-cols="14">
+    <input type="button" value="15×15" data-rows="15" data-cols="15">
+    <input type="button" value="16×16" data-rows="16" data-cols="16">
+    <input type="button" value="stop" data-rows="-1" data-cols="-1">
+    <label><input id="tell" type="checkbox">おねえさんに教えてあげる</label>
+    <a href="https://b.hatena.ne.jp/entry/shogo82148.github.io/letscount/" class="hatena-bookmark-button"
+      data-hatena-bookmark-title="おねえさんのコンピュータ" data-hatena-bookmark-layout="standard" title="このエントリーをはてなブックマークに追加"><img
+        src="https://b.st-hatena.com/images/entry-button/button-only.gif" alt="このエントリーをはてなブックマークに追加" width="20"
+        height="20" style="border: none;" /></a>
+    <script type="text/javascript" src="https://b.st-hatena.com/js/bookmark_button.js" charset="utf-8"
+      async="async"></script>
+    <a href="https://twitter.com/share" class="twitter-share-button" data-via="shogo82148" data-lang="ja">ツイート</a>
+    <script>!function (d, s, id) { var js, fjs = d.getElementsByTagName(s)[0]; if (!d.getElementById(id)) { js = d.createElement(s); js.id = id; js.src = "//platform.twitter.com/widgets.js"; fjs.parentNode.insertBefore(js, fjs); } }(document, "script", "twitter-wjs");</script>
+    <div>元ネタ<a href="http://www.youtube.com/watch?v=Q4gTV4r0zRs">『フカシギの数え方』 おねえさんといっしょ！ みんなで数えてみよう！</a></div>
+  </div>
+  <script type="text/javascript">
 
-  var _gaq = _gaq || [];
-  _gaq.push(['_setAccount', 'UA-4526627-4']);
-  _gaq.push(['_trackPageview']);
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-4526627-4']);
+    _gaq.push(['_trackPageview']);
 
-  (function() {
-    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-  })();
+    (function () {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
 
-    </script>
-  </body>
+  </script>
+</body>
+
 </html>

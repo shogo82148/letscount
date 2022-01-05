@@ -247,8 +247,10 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     window.addEventListener("resize", resize);
     resize();
-    $("input[type=button]").click(function () {
-        start(parseInt($(this).attr("rows") ?? "1"), parseInt($(this).attr("cols") ?? "1"));
+    document.querySelectorAll("input[type=button]").forEach((elem) => {
+        elem.addEventListener("click", () => {
+            start(parseInt(elem.dataset.rows ?? "1"), parseInt(elem.dataset.cols ?? "1"));
+        });
     });
 });
 //# sourceMappingURL=letscount.js.map
