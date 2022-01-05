@@ -1,0 +1,22 @@
+{
+    "compilerOptions": {
+        /* Visit https://aka.ms/tsconfig.json to read more about this file */
+        /* Language and Environment */
+        "target": "es2020",
+        /* Modules */
+        "module": "es2020",
+        /* Emit */
+        "sourceMap": true, /* Create source map files for emitted JavaScript files. */
+        "rootDir": "./",
+        /* Interop Constraints */
+        "esModuleInterop": true,
+        "forceConsistentCasingInFileNames": true,
+        /* Type Checking */
+        "strict": true,
+        /* Completeness */
+        "skipLibCheck": true /* Skip type checking all .d.ts files. */
+    },
+    "exclude": [
+        "node_modules"
+    ]
+}
