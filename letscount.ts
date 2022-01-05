@@ -207,7 +207,7 @@ $(function () {
     canvas.width(size);
     var scale = size / parseFloat(canvas.attr("width") ?? "1");
     var top = (pos?.top ?? 0) + (parent.height() ?? 0) * 0.1;
-    var left = (pos?.left ?? 0) + (parent.width() ?? 0 - size) / 2;
+    var left = (pos?.left ?? 0) + ((parent.width() ?? 0) - size) / 2;
     $("#start").css({
       top: top + margin * scale,
       left: left + margin * scale,
