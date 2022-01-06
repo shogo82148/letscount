@@ -230,20 +230,6 @@
     }
   }
 
-  // 比較を行う
-  function cmp(a: Uint16Array, b: Uint16Array): number {
-    var i;
-    var length = Math.max(a.length, b.length);
-    var digita, digitb;
-    for (i = length - 1; i >= 0; --i) {
-      digita = a[i] || 0;
-      digitb = b[i] || 0;
-      if (digita < digitb) return -1;
-      if (digita > digitb) return 1;
-    }
-    return 0;
-  }
-
   // 足し算を行う
   function add(a: Uint16Array, b: Uint16Array): Uint16Array {
     var alength = a.length;
@@ -274,15 +260,6 @@
     }
 
     return ans;
-  }
-
-  function clone(a: number[]): number[] {
-    var b = [];
-    var i;
-    for (i = 0; i < a.length; ++i) {
-      b.push(a[i]);
-    }
-    return b;
   }
 
   function grid(w: number, h: number): number[][] {

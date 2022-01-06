@@ -191,21 +191,6 @@
             return f;
         }
     }
-    // 比較を行う
-    function cmp(a, b) {
-        var i;
-        var length = Math.max(a.length, b.length);
-        var digita, digitb;
-        for (i = length - 1; i >= 0; --i) {
-            digita = a[i] || 0;
-            digitb = b[i] || 0;
-            if (digita < digitb)
-                return -1;
-            if (digita > digitb)
-                return 1;
-        }
-        return 0;
-    }
     // 足し算を行う
     function add(a, b) {
         var alength = a.length;
@@ -234,14 +219,6 @@
             return new_ans;
         }
         return ans;
-    }
-    function clone(a) {
-        var b = [];
-        var i;
-        for (i = 0; i < a.length; ++i) {
-            b.push(a[i]);
-        }
-        return b;
     }
     function grid(w, h) {
         var edge = [];
