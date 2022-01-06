@@ -4,16 +4,19 @@ document.addEventListener("DOMContentLoaded", () => {
   const height = canvas.height;
   const margin = 10;
   const ctx = canvas.getContext("2d")!;
+  const tellChildren = document.getElementById("tellchildren") as HTMLAnchorElement;
   let worker: Worker;
 
   function start(rows: number, cols: number) {
-    // 古いワーカーは用済み
+    // terminate old workers
     if (worker) {
       worker.terminate();
     }
-    if (rows <= 0 || cols <= 0) return;
+    if (rows <= 0 || cols <= 0) {
+      return;
+    }
 
-    $("#tellchildren").hide();
+    tellChildren.style.display = "none";
 
     // 画面更新
     $("#problem-text").text(rows + "×" + cols);
@@ -254,7 +257,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if ($("#tell").is(":checked")) hashtags.push("おしえてあげるモード");
     else hashtags.push("通常モード");
 
-    var shareurl =
+    const shareUrl =
       "https://twitter.com/share?" +
       "lang=ja&hashtags=" +
       encodeURIComponent(hashtags.join(",")) +
@@ -262,7 +265,9 @@ document.addEventListener("DOMContentLoaded", () => {
       encodeURIComponent("http://shogo82148.github.io/letscount/") +
       "&text=" +
       encodeURIComponent(text);
-    $("#tellchildren").attr("href", shareurl).attr("title", text).show();
+    tellChildren.href = shareUrl;
+    tellChildren.text = text;
+    tellChildren.style.display = "inline";
   }
 
   window.addEventListener("resize", resize);
