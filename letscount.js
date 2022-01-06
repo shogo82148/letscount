@@ -6,6 +6,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const margin = 10;
     const ctx = canvas.getContext("2d");
     const tellChildren = document.getElementById("tellchildren");
+    const problemText = document.getElementById("problem-text");
     let worker;
     function start(rows, cols) {
         // terminate old workers
@@ -17,7 +18,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         tellChildren.style.display = "none";
         // 画面更新
-        $("#problem-text").text(rows + "×" + cols);
+        problemText.innerText = `${rows}×${cols}`;
         // 新しいワーカーを作成・初期化
         var workerjs = $("#tell").is(":checked") ? "simpath.js" : "count.js";
         if (location.hostname == "localhost") {
@@ -246,7 +247,7 @@ document.addEventListener("DOMContentLoaded", () => {
             "&text=" +
             encodeURIComponent(text);
         tellChildren.href = shareUrl;
-        tellChildren.text = text;
+        tellChildren.title = text;
         tellChildren.style.display = "inline";
     }
     window.addEventListener("resize", resize);
