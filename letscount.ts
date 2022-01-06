@@ -6,6 +6,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const ctx = canvas.getContext("2d")!;
   const tellChildren = document.getElementById("tellchildren") as HTMLAnchorElement;
   const problemText = document.getElementById("problem-text") as HTMLParagraphElement;
+  const tell = document.getElementById("tell") as HTMLInputElement;
+  let tellMode = false;
   let worker: Worker;
 
   function start(rows: number, cols: number) {
@@ -22,12 +24,13 @@ document.addEventListener("DOMContentLoaded", () => {
     // 画面更新
     problemText.innerText = `${rows}×${cols}`;
 
-    // 新しいワーカーを作成・初期化
-    var workerjs = $("#tell").is(":checked") ? "simpath.js" : "count.js";
+    // start a new worker
+    tellMode = tell.checked;
+    const workerJs = tellMode ? "simpath.js" : "count.js";
     if (location.hostname == "localhost") {
-      worker = new Worker(workerjs + "?" + Math.random());
+      worker = new Worker(workerJs + "?" + Math.random());
     } else {
-      worker = new Worker(workerjs);
+      worker = new Worker(workerJs);
     }
     worker.addEventListener("message", onMessage, false);
     worker.postMessage({ rows: rows, cols: cols });
@@ -223,7 +226,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function share(size: string, patterns: string, time: number) {
-    var textPattern = [
+    const textPattern = [
       "%sのときは、%dだってよ！%fかかったわ！",
       "はい、出ました！%sのときは%d通り！%fかかったわ！",
       "あ、なんかでてるね。%sのときは%d通り。すごいね！%fかかったわ！",
@@ -231,8 +234,8 @@ document.addEventListener("DOMContentLoaded", () => {
       "%sのときは、なんと！%d通り！めまいがしてきたわね！%fかかったわ！",
       "ツイニデタワ。%sノトキハ%d通り！皆ノ子孫ニ連絡シナキャ！%fカカッタワ！",
     ];
-    var text = textPattern[Math.floor(Math.random() * textPattern.length)];
-    var hashtags = ["おねえさんのコンピュータ"];
+    let text = textPattern[Math.floor(Math.random() * textPattern.length)];
+    const hashtags = ["おねえさんのコンピュータ"];
     text = text.replace("%s", size);
     text = text.replace("%d", patterns);
     text = text.replace("%f", time / 1000 + "秒");
@@ -255,8 +258,11 @@ document.addEventListener("DOMContentLoaded", () => {
     //   }
     // }
 
-    if ($("#tell").is(":checked")) hashtags.push("おしえてあげるモード");
-    else hashtags.push("通常モード");
+    if (tellMode) {
+      hashtags.push("おしえてあげるモード");
+    } else {
+      hashtags.push("通常モード");
+    }
 
     const shareUrl =
       "https://twitter.com/share?" +
