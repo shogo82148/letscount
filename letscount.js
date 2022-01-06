@@ -5,6 +5,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const height = canvas.height;
     const margin = 10;
     const ctx = canvas.getContext("2d");
+    const startLabel = document.getElementById("start");
+    const goalLabel = document.getElementById("goal");
     const tellChildren = document.getElementById("tellchildren");
     const problemText = document.getElementById("problem-text");
     const resultText = document.getElementById("result-text");
@@ -56,7 +58,8 @@ document.addEventListener("DOMContentLoaded", () => {
             "無量大数",
         ]; // 大きな数の単位
         drawAllPath();
-        $("#start, #goal").show();
+        startLabel.style.display = "block";
+        goalLabel.style.display = "block";
         // パス表示
         function onMessage(e) {
             var data = e.data;
@@ -196,16 +199,10 @@ document.addEventListener("DOMContentLoaded", () => {
         const scale = size / width;
         const top = parent.offsetTop + parent.clientHeight * 0.1;
         const left = parent.offsetLeft + (parent.clientWidth - size) / 2;
-        const startLabel = document.getElementById("start");
-        if (startLabel) {
-            startLabel.style.top = `${top + margin * scale}px`;
-            startLabel.style.left = `${left + margin * scale}px`;
-        }
-        const goalLabel = document.getElementById("goal");
-        if (goalLabel) {
-            goalLabel.style.top = `${top + size - margin * scale}px`;
-            goalLabel.style.left = `${left + size - margin * scale}px`;
-        }
+        startLabel.style.top = `${top + margin * scale}px`;
+        startLabel.style.left = `${left + margin * scale}px`;
+        goalLabel.style.top = `${top + size - margin * scale}px`;
+        goalLabel.style.left = `${left + size - margin * scale}px`;
     }
     function share(size, patterns, time) {
         const textPattern = [
