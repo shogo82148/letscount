@@ -20,7 +20,6 @@
     },
     "homepage": "https://shogo82148.github.io/letscount/",
     "devDependencies": {
-        "@types/jquery": "^3.5.11",
         "@types/node": "^17.0.8",
         "http-server": "^14.0.0",
         "prettier": "^2.4.1",
