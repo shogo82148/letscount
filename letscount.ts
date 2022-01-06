@@ -1,36 +1,45 @@
-$(function () {
-  var canvas = $<HTMLCanvasElement>("#path");
-  var width = parseFloat(canvas.attr("width") || "0");
-  var height = parseFloat(canvas.attr("height") || "0");
-  var margin = 10;
-  var ctx = canvas[0].getContext("2d")!;
-  var worker: Worker;
+document.addEventListener("DOMContentLoaded", () => {
+  const canvas = document.getElementById("path") as HTMLCanvasElement;
+  const width = canvas.width;
+  const height = canvas.height;
+  const margin = 10;
+  const ctx = canvas.getContext("2d")!;
+  const startLabel = document.getElementById("start") as HTMLDivElement;
+  const goalLabel = document.getElementById("goal") as HTMLDivElement;
+  const tellChildren = document.getElementById("tellchildren") as HTMLAnchorElement;
+  const problemText = document.getElementById("problem-text") as HTMLParagraphElement;
+  const resultText = document.getElementById("result-text") as HTMLDivElement;
+  const tell = document.getElementById("tell") as HTMLInputElement;
+  let tellMode = false;
+  let worker: Worker;
 
   function start(rows: number, cols: number) {
-    // 古いワーカーは用済み
+    // terminate old workers
     if (worker) {
       worker.terminate();
     }
-    if (rows <= 0 || cols <= 0) return;
+    if (rows <= 0 || cols <= 0) {
+      return;
+    }
 
-    $("#tellchildren").hide();
+    tellChildren.style.display = "none";
 
     // 画面更新
-    $("#problem-text").text(rows + "×" + cols);
+    problemText.innerText = `${rows}×${cols}`;
 
-    // 新しいワーカーを作成・初期化
-    var workerjs = $("#tell").is(":checked") ? "simpath.js" : "count.js";
+    // start a new worker
+    tellMode = tell.checked;
+    const workerJs = tellMode ? "simpath.js" : "count.js";
     if (location.hostname == "localhost") {
-      worker = new Worker(workerjs + "?" + Math.random());
+      worker = new Worker(workerJs + "?" + Math.random());
     } else {
-      worker = new Worker(workerjs);
+      worker = new Worker(workerJs);
     }
     worker.addEventListener("message", onMessage, false);
     worker.postMessage({ rows: rows, cols: cols });
 
     var xstep = (width - 2 * margin) / cols;
     var ystep = (height - 2 * margin) / rows;
-    var resultText = $("#result-text");
     var units = [
       "",
       "万",
@@ -53,7 +62,8 @@ $(function () {
     ]; // 大きな数の単位
 
     drawAllPath();
-    $("#start, #goal").show();
+    startLabel.style.display = "block";
+    goalLabel.style.display = "block";
 
     // パス表示
     function onMessage(e: any) {
@@ -125,16 +135,15 @@ $(function () {
 
     // 経路数の表示
     function showCount(count: number[]) {
-      var s = "",
-        i;
-      for (i = 0; i < count.length; i++) {
-        s = (count[i + 1] ? addzero(count[i]) : count[i]) + (units[i] || "") + s;
+      let s = "";
+      for (let i = 0; i < count.length; i++) {
+        s = (count[i + 1] ? fillZero(count[i]) : count[i]) + (units[i] || "") + s;
       }
-      resultText.text(s);
+      resultText.innerText = s;
       return s;
 
       // 0埋めをする
-      function addzero(count: number): string {
+      function fillZero(count: number): string {
         if (count >= 1000) {
           return `${count}`;
         } else if (count >= 100) {
@@ -200,26 +209,20 @@ $(function () {
   }
 
   function resize() {
-    var parent = $<HTMLDivElement>("#patterns");
-    var size = Math.min(parent.width() ?? 0, parent.height() ?? 0) * 0.8;
-    var canvas = $<HTMLCanvasElement>("#path");
-    var pos = parent.offset();
-    canvas.width(size);
-    var scale = size / parseFloat(canvas.attr("width") ?? "1");
-    var top = (pos?.top ?? 0) + (parent.height() ?? 0) * 0.1;
-    var left = (pos?.left ?? 0) + ((parent.width() ?? 0) - size) / 2;
-    $("#start").css({
-      top: top + margin * scale,
-      left: left + margin * scale,
-    });
-    $("#goal").css({
-      top: top + (canvas?.height() ?? 0) - margin * scale,
-      left: left + (canvas?.width() ?? 0) - margin * scale,
-    });
+    const parent = document.getElementById("patterns") as HTMLDivElement;
+    const size = Math.min(parent.clientWidth, parent.clientHeight) * 0.8;
+    canvas.style.width = `${size}px`;
+    const scale = size / width;
+    const top = parent.offsetTop + parent.clientHeight * 0.1;
+    const left = parent.offsetLeft + (parent.clientWidth - size) / 2;
+    startLabel.style.top = `${top + margin * scale}px`;
+    startLabel.style.left = `${left + margin * scale}px`;
+    goalLabel.style.top = `${top + size - margin * scale}px`;
+    goalLabel.style.left = `${left + size - margin * scale}px`;
   }
 
   function share(size: string, patterns: string, time: number) {
-    var textPattern = [
+    const textPattern = [
       "%sのときは、%dだってよ！%fかかったわ！",
       "はい、出ました！%sのときは%d通り！%fかかったわ！",
       "あ、なんかでてるね。%sのときは%d通り。すごいね！%fかかったわ！",
@@ -227,8 +230,8 @@ $(function () {
       "%sのときは、なんと！%d通り！めまいがしてきたわね！%fかかったわ！",
       "ツイニデタワ。%sノトキハ%d通り！皆ノ子孫ニ連絡シナキャ！%fカカッタワ！",
     ];
-    var text = textPattern[(Math.random() * textPattern.length) | 0];
-    var hashtags = ["おねえさんのコンピュータ"];
+    let text = textPattern[Math.floor(Math.random() * textPattern.length)];
+    const hashtags = ["おねえさんのコンピュータ"];
     text = text.replace("%s", size);
     text = text.replace("%d", patterns);
     text = text.replace("%f", time / 1000 + "秒");
@@ -251,10 +254,13 @@ $(function () {
     //   }
     // }
 
-    if ($("#tell").is(":checked")) hashtags.push("おしえてあげるモード");
-    else hashtags.push("通常モード");
+    if (tellMode) {
+      hashtags.push("おしえてあげるモード");
+    } else {
+      hashtags.push("通常モード");
+    }
 
-    var shareurl =
+    const shareUrl =
       "https://twitter.com/share?" +
       "lang=ja&hashtags=" +
       encodeURIComponent(hashtags.join(",")) +
@@ -262,13 +268,17 @@ $(function () {
       encodeURIComponent("http://shogo82148.github.io/letscount/") +
       "&text=" +
       encodeURIComponent(text);
-    $("#tellchildren").attr("href", shareurl).attr("title", text).show();
+    tellChildren.href = shareUrl;
+    tellChildren.title = text;
+    tellChildren.style.display = "inline";
   }
 
-  $(window).resize(resize);
+  window.addEventListener("resize", resize);
   resize();
 
-  $("input[type=button]").click(function () {
-    start(parseInt($(this).attr("rows") ?? "1"), parseInt($(this).attr("cols") ?? "1"));
+  document.querySelectorAll<HTMLInputElement>("input[type=button]").forEach((elem) => {
+    elem.addEventListener("click", () => {
+      start(parseInt(elem.dataset.rows ?? "1"), parseInt(elem.dataset.cols ?? "1"));
+    });
   });
 });
