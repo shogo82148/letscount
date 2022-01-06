@@ -3,7 +3,6 @@
     var PERIOD_SHOW = 50;
     var COUNT_PERIOD_SHOW = 10;
     var SLEEP_TIME = 0;
-    var nowimpl = !!Date.now;
     var isWebWorker = typeof require === "undefined";
     class Graph {
         constructor(edges, start, goal) {
@@ -246,13 +245,13 @@
             return;
         }
         // 時間計測
-        var now = nowimpl ? Date.now() : +new Date();
+        let now = Date.now();
         if (now - lastShowTime < PERIOD_SHOW)
             return;
         lastShowTime = now;
         // ウエイトを挿入
         while (now - lastShowTime < SLEEP_TIME) {
-            now = nowimpl ? Date.now() : +new Date();
+            now = Date.now();
         }
         // 経路表示
         postMessage({
@@ -278,19 +277,19 @@
             else {
                 COUNT_PERIOD_SHOW = e.data.rows;
             }
-            var startTime = nowimpl ? Date.now() : +new Date();
+            const startTime = Date.now();
             edge = grid(e.data.cols, e.data.rows);
             g = new Graph(edge, 1, 1);
             g.goal = g.node_count;
             postMessage({
                 count: g.count(0),
-                time: (nowimpl ? Date.now() : +new Date()) - startTime,
+                time: Date.now() - startTime,
             });
         }, false);
     }
     else {
-        let cols = parseInt(process.argv[2] || "9");
-        let rows = parseInt(process.argv[3] || "9");
+        const cols = parseInt(process.argv[2] || "9");
+        const rows = parseInt(process.argv[3] || "9");
         edge = grid(cols, rows);
         g = new Graph(edge, 1, 1);
         g.goal = g.node_count;
