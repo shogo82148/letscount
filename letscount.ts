@@ -6,6 +6,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const ctx = canvas.getContext("2d")!;
   const tellChildren = document.getElementById("tellchildren") as HTMLAnchorElement;
   const problemText = document.getElementById("problem-text") as HTMLParagraphElement;
+  const resultText = document.getElementById("result-text") as HTMLDivElement;
   const tell = document.getElementById("tell") as HTMLInputElement;
   let tellMode = false;
   let worker: Worker;
@@ -37,7 +38,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     var xstep = (width - 2 * margin) / cols;
     var ystep = (height - 2 * margin) / rows;
-    var resultText = $("#result-text");
     var units = [
       "",
       "万",
@@ -132,12 +132,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // 経路数の表示
     function showCount(count: number[]) {
-      var s = "",
-        i;
-      for (i = 0; i < count.length; i++) {
+      let s = "";
+      for (let i = 0; i < count.length; i++) {
         s = (count[i + 1] ? fillZero(count[i]) : count[i]) + (units[i] || "") + s;
       }
-      resultText.text(s);
+      resultText.innerText = s;
       return s;
 
       // 0埋めをする
